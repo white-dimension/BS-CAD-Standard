@@ -26,6 +26,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                     ed.WriteMessage("\n[5] 图层模式切换        BS_LAYER_MODE");
                     ed.WriteMessage("\n[6] 恢复全部图层        BS_LAYER_ALL");
                     ed.WriteMessage("\n[7] 检查 CTB 颜色规则    BS_CTB_CHECK");
+                    ed.WriteMessage("\n[8] 导出 CTB 规则说明    BS_CTB_EXPORT");
                     ed.WriteMessage("\n[0] 退出");
                     ed.WriteMessage("\n");
 
@@ -52,6 +53,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                         "5" => "BS_LAYER_MODE ",
                         "6" => "BS_LAYER_ALL ",
                         "7" => "BS_CTB_CHECK ",
+                        "8" => "BS_CTB_EXPORT ",
                         "0" => null,
                         _ => "INVALID"
                     };

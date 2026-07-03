@@ -1,10 +1,11 @@
+using System;
+using System.Linq;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using BS_CAD_STANDARD_V10_Plugin.Core;
 using BS_CAD_STANDARD_V10_Plugin.Services;
 using BS_CAD_STANDARD_V10_Plugin.Utils;
-using System.Linq;
 
 namespace BS_CAD_STANDARD_V10_Plugin.Commands
 {
@@ -115,6 +116,58 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
             catch (System.Exception ex)
             {
                 ReportUtils.Exception(ed, "BS_CTB_CHECK 执行失败", ex);
+            }
+        }
+
+        [CommandMethod("BS_CTB_EXPORT")]
+        public void BsCtbExport()
+        {
+            Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+            try
+            {
+                StandardContext? context = ConfigurationService.CreateContext(ed);
+                if (context == null) return;
+
+                StandardConfig config = context.StandardConfig;
+
+                if (config.CtbRules == null || config.CtbRules.Count == 0)
+                {
+                    ed.WriteMessage("\nNo CTB rules found in config.");
+                    return;
+                }
+
+                ed.WriteMessage("\n===== BS_CTB_EXPORT Report =====");
+
+                // Config
+                ed.WriteMessage($"\n\n[Config]");
+                ed.WriteMessage($"\nLoaded CAD standard config: {GetConfigFileName(context.StandardConfigPath)}");
+                ed.WriteMessage($"\nStandard name: {config.StandardName}");
+                ed.WriteMessage($"\nVersion: {config.Version}");
+                ed.WriteMessage($"\nCTB name: {config.Ctb}");
+
+                // Export
+                CtbExportReport report = CtbExportService.ExportRules(config);
+
+                if (report.Success)
+                {
+                    ed.WriteMessage($"\n\n[Export]");
+                    ed.WriteMessage($"\nRules exported: {report.RuleCount}");
+                    ed.WriteMessage($"\nMarkdown: {report.MarkdownPath}");
+                    ed.WriteMessage($"\nCSV: {report.CsvPath}");
+                    ed.WriteMessage($"\n\n[Result]");
+                    ed.WriteMessage($"\nBS_CTB_EXPORT completed.\n");
+                }
+                else
+                {
+                    ed.WriteMessage($"\n\n[Result]");
+                    ed.WriteMessage($"\nBS_CTB_EXPORT failed.");
+                    ed.WriteMessage($"\nError: {report.ErrorMessage}\n");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ReportUtils.Exception(ed, "BS_CTB_EXPORT 执行失败", ex);
             }
         }
 

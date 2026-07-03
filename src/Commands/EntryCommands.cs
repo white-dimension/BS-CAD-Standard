@@ -17,6 +17,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
             ed.WriteMessage("\n  BS_DRAW     绘图辅助入口（图层/文字/标注/引线）");
             ed.WriteMessage("\n  BS_MIGRATE  旧图纸迁移入口（分析→导出→迁移→清理→检查）");
             ed.WriteMessage("\n  BS_CTB_CHECK  检查 CTB 颜色规则");
+            ed.WriteMessage("\n  BS_CTB_EXPORT  导出 CTB 规则说明文件");
 
             ed.WriteMessage("\n\n--- 绘图辅助 ---");
             ed.WriteMessage("\n  BS_LAYER    标准图层切换与创建");
