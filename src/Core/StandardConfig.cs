@@ -76,6 +76,12 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         public string CategoryName { get; set; } = string.Empty;
 
         [JsonIgnore]
+        public bool Locked { get; set; }
+
+        [JsonIgnore]
+        public string NewViewportFreezeRaw { get; set; } = string.Empty;
+
+        [JsonIgnore]
         public int OrderIndex { get; set; }
 
         [JsonIgnore]
@@ -167,6 +173,12 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("categoryName")]
         public string CategoryName { get; set; } = string.Empty;
+
+        [JsonPropertyName("locked")]
+        public JsonElement LockedJson { get; set; }
+
+        [JsonPropertyName("newViewportFreeze")]
+        public JsonElement NewViewportFreezeJson { get; set; }
     }
 
     public class StandardCategory

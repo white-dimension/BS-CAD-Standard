@@ -274,6 +274,8 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
                 Order = order,
                 CategoryNo = source.CategoryNo,
                 CategoryName = source.CategoryName,
+                Locked = ParseLocked(source.LockedJson),
+                NewViewportFreezeRaw = ParseNewViewportFreeze(source.NewViewportFreezeJson),
                 OrderIndex = order > 0 ? order : 0,
                 LayerOrderSource = "JSON order field"
             };
@@ -293,6 +295,25 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
             text = text.Replace("mm", "", StringComparison.OrdinalIgnoreCase).Trim();
             return double.TryParse(text, out double mm) ? mm : -1.0;
+        }
+
+        private static bool ParseLocked(JsonElement locked)
+        {
+            if (locked.ValueKind == JsonValueKind.True) return true;
+            if (locked.ValueKind == JsonValueKind.False) return false;
+            return false;
+        }
+
+        private static string ParseNewViewportFreeze(JsonElement vpf)
+        {
+            if (vpf.ValueKind == JsonValueKind.True) return "true";
+            if (vpf.ValueKind == JsonValueKind.False) return "false";
+            if (vpf.ValueKind == JsonValueKind.String)
+            {
+                string? val = vpf.GetString();
+                if (!string.IsNullOrWhiteSpace(val)) return val;
+            }
+            return string.Empty;
         }
 
         private static bool ParsePlot(JsonElement plot)
