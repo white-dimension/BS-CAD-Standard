@@ -1,0 +1,301 @@
+{
+  "version": "1.0",
+  "standardName": "BS CAD Standard",
+  "packageName": "BS_CAD_STANDARD_V10",
+  "description": "旧图纸非标准图层 → BS 标准图层迁移规则。按优先级从高到低排列：更具体的多词组合排前面，泛规则排最后。每条规则按顺序匹配，首次命中即返回。",
+  "rules": [
+    {
+      "id": "wall-demo",
+      "rule": "包含 墙体拆除 / 拆除墙体 / 拆墙 / DEMO / 拆除",
+      "keywords": ["墙体拆除", "拆除墙体", "拆墙", "DEMO", "拆除"],
+      "targetLayer": "01-AR-拆除墙体",
+      "note": "拆除类图层优先于新建和普通墙体"
+    },
+    {
+      "id": "wall-new",
+      "rule": "包含 新建楼梯+楼板 / 新建墙 / 新墙 / 新建 / 轻钢龙骨 / NEW-WALL / NEWWALL",
+      "keywords": ["新建楼梯", "新建墙", "新建楼板", "新墙", "轻钢龙骨", "NEW-WALL", "NEWWALL", "新建"],
+      "targetLayer": "01-AR-新建墙体",
+      "note": "新建构造优先于原有和普通墙体"
+    },
+    {
+      "id": "wall-exist",
+      "rule": "包含 EXIST / 原有 / 保留 / 原始",
+      "keywords": ["EXIST", "原有", "保留", "原始", "原"],
+      "targetLayer": "01-AR-原有墙体",
+      "note": "原有/保留墙体"
+    },
+    {
+      "id": "finish-wall",
+      "rule": "包含 墙体完成面 / 墙面完成面 / 完成面 / FINISH",
+      "keywords": ["墙体完成面", "墙面完成面", "完成面", "FINISH", "墙面"],
+      "targetLayer": "02-IN-完成面",
+      "note": "完成面优先于泛墙体规则"
+    },
+    {
+      "id": "plumbing-drain",
+      "rule": "包含 下水 / 排水 / DRAIN / EM-04",
+      "keywords": ["下水", "排水", "DRAIN", "EM-04"],
+      "targetLayer": "12-PL-排水",
+      "note": "排水类优先于泛设备规则"
+    },
+    {
+      "id": "plumbing-supply",
+      "rule": "包含 上水 / 给水 / WATER / EM-03",
+      "keywords": ["上水", "给水", "WATER", "EM-03"],
+      "targetLayer": "12-PL-给水",
+      "note": "给水类优先于泛设备规则"
+    },
+    {
+      "id": "air-vent",
+      "rule": "包含 吊顶风口 / 风口 / VENT",
+      "keywords": ["吊顶风口", "风口", "VENT", "CL-04"],
+      "targetLayer": "10-EQ-风口",
+      "note": "风口比泛设备规则更具体"
+    },
+    {
+      "id": "fire-protection",
+      "rule": "包含 消防设备点位 / 消防 / FIRE / 喷淋 / 烟感 / BS-07",
+      "keywords": ["消防设备点位", "消防", "FIRE", "喷淋", "烟感", "BS-07"],
+      "targetLayer": "11-FI-喷淋",
+      "note": "消防类优先泛设备规则"
+    },
+    {
+      "id": "equipment-concealed",
+      "rule": "包含 暗藏设备 / 隐藏设备 / CL-03",
+      "keywords": ["暗藏设备", "隐藏设备", "CL-03"],
+      "targetLayer": "10-EQ-通用设备",
+      "note": "暗藏设备是特定设备类型"
+    },
+    {
+      "id": "equipment-fixed",
+      "rule": "包含 固定设备点位 / BS-05",
+      "keywords": ["固定设备点位", "BS-05"],
+      "targetLayer": "10-EQ-通用设备",
+      "note": "固定设备点位"
+    },
+    {
+      "id": "equipment-variable",
+      "rule": "包含 可变设备点位 / 可变设备 / BS-06",
+      "keywords": ["可变设备点位", "可变设备", "BS-06"],
+      "targetLayer": "10-EQ-通用设备",
+      "note": "可变设备点位"
+    },
+    {
+      "id": "equipment-floor",
+      "rule": "包含 地面设备 / FL-02",
+      "keywords": ["地面设备", "FL-02"],
+      "targetLayer": "10-EQ-通用设备",
+      "note": "地面设备是设备子类"
+    },
+    {
+      "id": "structure-lintel",
+      "rule": "包含 建筑过梁 / 过梁 / BS-03-建筑过梁",
+      "keywords": ["建筑过梁", "过梁"],
+      "targetLayer": "01-AR-洞口",
+      "note": "过梁归洞口层"
+    },
+    {
+      "id": "structure-stair",
+      "rule": "包含 建筑楼梯 / 楼梯 / STAIR / BS-08",
+      "keywords": ["建筑楼梯", "楼梯", "STAIR", "BS-08"],
+      "targetLayer": "01-AR-墙体",
+      "note": "楼梯第一版暂归墙体层"
+    },
+    {
+      "id": "structure-slab-new",
+      "rule": "包含 新建楼梯 / 新建楼板 / BS-03-新建楼梯",
+      "keywords": ["新建楼梯", "新建楼板", "BS-03"],
+      "targetLayer": "01-AR-新建墙体",
+      "note": "新建楼板/楼梯归新建墙体"
+    },
+    {
+      "id": "structure-slab",
+      "rule": "包含 建筑楼板 / 楼板 / BS-09",
+      "keywords": ["建筑楼板", "楼板", "BS-09"],
+      "targetLayer": "01-AR-墙体",
+      "note": "楼板第一版暂归墙体层"
+    },
+    {
+      "id": "door-building",
+      "rule": "包含 建筑门窗 / 室内门窗 / 室内门 / BS-04 / FF-04 / FF-室内门",
+      "keywords": ["建筑门窗", "室内门窗", "室内门", "BS-04", "FF-04"],
+      "targetLayer": "01-AR-门",
+      "note": "门窗混合图层先归到门图层，后续人工细分"
+    },
+    {
+      "id": "floor-paving",
+      "rule": "包含 地面铺设 / 地面铺装 / 铺设 / 铺装 / FL-01",
+      "keywords": ["地面铺设", "地面铺装", "铺设", "铺装", "FL-01"],
+      "targetLayer": "03-FL-地面",
+      "note": "地面铺设优先于泛 FL 和地面规则"
+    },
+    {
+      "id": "cabinet",
+      "rule": "包含 定制柜体 / 柜体 / CABINET / FF-02",
+      "keywords": ["定制柜体", "柜体", "CABINET", "FF-02"],
+      "targetLayer": "05-FU-柜体",
+      "note": "柜体优先泛家具规则"
+    },
+    {
+      "id": "lighting-soft",
+      "rule": "包含 软装灯具 / FF-03",
+      "keywords": ["软装灯具", "FF-03"],
+      "targetLayer": "07-LI-射灯",
+      "note": "软装灯具优先泛灯具规则"
+    },
+    {
+      "id": "hatch-fill",
+      "rule": "包含 填充图层 / 填充 / HATCH / BS-10",
+      "keywords": ["填充图层", "填充", "HATCH", "BS-10"],
+      "targetLayer": "17-AN-辅助填充",
+      "note": "无法细分填充类型时归辅助填充"
+    },
+    {
+      "id": "dim-index",
+      "rule": "包含 标注索引 / 索引 / IDEN",
+      "keywords": ["标注索引", "索引", "IDEN"],
+      "targetLayer": "14-DM-符号",
+      "note": "索引符号归标注符号层，优先于泛标注规则"
+    },
+    {
+      "id": "text-note",
+      "rule": "包含 文字说明 / 修改说明 / 说明文字 / 施工说明",
+      "keywords": ["文字说明", "修改说明", "说明文字", "施工说明"],
+      "targetLayer": "13-TX-说明文字",
+      "note": "说明文字优先于泛文字规则"
+    },
+    {
+      "id": "viewport",
+      "rule": "包含 视口 / VIEWPORT / LA-03",
+      "keywords": ["视口", "VIEWPORT", "LA-03"],
+      "targetLayer": "15-FR-视口",
+      "note": "视口层"
+    },
+    {
+      "id": "ceiling-shape",
+      "rule": "包含 吊顶造型 / 造型 / CL-造型",
+      "keywords": ["吊顶造型", "造型", "CL-造型"],
+      "targetLayer": "04-CE-吊顶",
+      "note": "吊顶造型"
+    },
+    {
+      "id": "ceiling",
+      "rule": "包含 天花 / CEIL / 吊顶 / CL-04 / CL-03",
+      "keywords": ["天花", "CEIL", "吊顶", "CL-04", "CL-03"],
+      "targetLayer": "04-CE-吊顶",
+      "note": "天花/吊顶泛规则"
+    },
+    {
+      "id": "temp-plot",
+      "rule": "包含 Temp_PlotLayer / 不打印 / 临时打印 / PLOT",
+      "keywords": ["Temp_PlotLayer", "不打印", "临时打印", "PLOT"],
+      "targetLayer": "17-AN-不打印线",
+      "note": "临时打印层归不打印线层"
+    },
+    {
+      "id": "glass",
+      "rule": "包含 玻璃 / GLASS",
+      "keywords": ["玻璃", "GLASS"],
+      "targetLayer": "02-IN-玻璃"
+    },
+    {
+      "id": "door-generic",
+      "rule": "包含 DOOR / 门 / 门窗",
+      "keywords": ["DOOR", "门", "门窗"],
+      "targetLayer": "01-AR-门"
+    },
+    {
+      "id": "window",
+      "rule": "包含 WINDOW / WIN / 窗",
+      "keywords": ["WINDOW", "WIN", "窗"],
+      "targetLayer": "01-AR-窗"
+    },
+    {
+      "id": "floor-generic",
+      "rule": "包含 地面 / FLOOR / FL-",
+      "keywords": ["FLOOR", "地面", "FL-"],
+      "targetLayer": "03-FL-地面",
+      "note": "注意 FL- 包含连字符以避免误匹配 FL 开头的设备层"
+    },
+    {
+      "id": "lighting-generic",
+      "rule": "包含 LIGHT / 灯具 / 照明 / LAMP",
+      "keywords": ["LIGHT", "照明", "LAMP", "灯具"],
+      "targetLayer": "07-LI-射灯"
+    },
+    {
+      "id": "electrical",
+      "rule": "包含 ELEC / 插座 / 开关 / 强电 / POWER",
+      "keywords": ["ELEC", "插座", "开关", "强电", "POWER", "电"],
+      "targetLayer": "08-EL-强电线路"
+    },
+    {
+      "id": "low-current",
+      "rule": "包含 弱电 / 网络 / WK / 监控 / CCTV",
+      "keywords": ["弱电", "网络", "WK", "监控", "CCTV"],
+      "targetLayer": "09-WK-弱电线路"
+    },
+    {
+      "id": "plumbing-generic",
+      "rule": "包含 给排水 / PL / 水管",
+      "keywords": ["给排水", "PL", "水管", "水"],
+      "targetLayer": "12-PL-给水"
+    },
+    {
+      "id": "equipment-generic",
+      "rule": "包含 设备 / EQ / 空调 / EQUIP",
+      "keywords": ["设备", "EQ", "空调", "EQUIP"],
+      "targetLayer": "10-EQ-通用设备"
+    },
+    {
+      "id": "dim-generic",
+      "rule": "包含 DIM / 标注 / 尺寸 / DIMENSION",
+      "keywords": ["DIM", "标注", "尺寸", "DIMENSION"],
+      "targetLayer": "14-DM-尺寸标注"
+    },
+    {
+      "id": "text-generic",
+      "rule": "包含 TEXT / TXT / 文字 / NOTE / 注释",
+      "keywords": ["TEXT", "TXT", "文字", "NOTE", "注释"],
+      "targetLayer": "13-TX-普通文字"
+    },
+    {
+      "id": "fire-generic",
+      "rule": "包含 FIRE / FI / 喷淋 / 烟感",
+      "keywords": ["FIRE", "FI", "喷淋", "烟感"],
+      "targetLayer": "11-FI-喷淋"
+    },
+    {
+      "id": "title-block",
+      "rule": "包含 图框 / FR / TITLE / 标题栏 / 图签",
+      "keywords": ["图框", "FR", "TITLE", "标题栏", "图签"],
+      "targetLayer": "15-FR-图框"
+    },
+    {
+      "id": "xref",
+      "rule": "包含 XREF / 参照 / 底图 / 参考 / REF-",
+      "keywords": ["XREF", "参照", "底图", "参考", "REF-"],
+      "targetLayer": "16-RF-原始底图"
+    },
+    {
+      "id": "auxiliary",
+      "rule": "包含 辅助 / 临时 / AN- / 辅助线",
+      "keywords": ["辅助", "临时", "AN-", "辅助线"],
+      "targetLayer": "17-AN-辅助线"
+    },
+    {
+      "id": "furniture",
+      "rule": "包含 FURN / 家具 / 桌椅 / FURNITURE",
+      "keywords": ["FURN", "家具", "桌椅", "FURNITURE"],
+      "targetLayer": "05-FU-桌椅"
+    },
+    {
+      "id": "wall-generic",
+      "rule": "包含 WALL / 墙 / 墙体 / 承重墙 / 非承重墙 / 外墙 / 内墙 / 建筑",
+      "keywords": ["WALL", "墙", "墙体", "承重墙", "非承重墙", "外墙", "内墙", "建筑"],
+      "targetLayer": "01-AR-墙体",
+      "note": "泛墙规则放在最后，确保具体墙类型先被前面规则匹配"
+    }
+  ]
+}

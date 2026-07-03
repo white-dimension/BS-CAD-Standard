@@ -1,0 +1,18 @@
+# .NET build output
+bin/
+obj/
+
+# VS files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.userprefs
+
+# JetBrains
+.idea/
+*.DotSettings
+
+# OS files
+Thumbs.db
+.DS_Store
