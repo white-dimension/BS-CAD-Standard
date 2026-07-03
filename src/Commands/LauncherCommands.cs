@@ -25,6 +25,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                     ed.WriteMessage("\n[4] 补齐缺失图层        BS_FIX_MISSING");
                     ed.WriteMessage("\n[5] 图层模式切换        BS_LAYER_MODE");
                     ed.WriteMessage("\n[6] 恢复全部图层        BS_LAYER_ALL");
+                    ed.WriteMessage("\n[7] 检查 CTB 颜色规则    BS_CTB_CHECK");
                     ed.WriteMessage("\n[0] 退出");
                     ed.WriteMessage("\n");
 
@@ -50,6 +51,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                         "4" => "BS_FIX_MISSING ",
                         "5" => "BS_LAYER_MODE ",
                         "6" => "BS_LAYER_ALL ",
+                        "7" => "BS_CTB_CHECK ",
                         "0" => null,
                         _ => "INVALID"
                     };

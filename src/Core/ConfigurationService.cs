@@ -241,6 +241,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
                 // Store load modes from JSON
                 config.LoadModes = source.LoadModes;
 
+                // Store ctb rules from JSON
+                config.CtbRules = source.CtbRules;
+
                 for (int i = 0; i < source.Layers.Count; i++)
                 {
                     config.Layers.Add(MapLayerV06(source.Layers[i]));

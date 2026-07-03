@@ -18,6 +18,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         [JsonPropertyName("ctb")]
         public string Ctb { get; set; } = string.Empty;
 
+        [JsonPropertyName("ctbRules")]
+        public List<CtbRuleConfig> CtbRules { get; set; } = new();
+
         [JsonPropertyName("layers")]
         public List<LayerConfig> Layers { get; set; } = new();
 
@@ -132,6 +135,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         [JsonPropertyName("layers")]
         public List<BsCadLayerV06> Layers { get; set; } = new();
 
+        [JsonPropertyName("ctbRules")]
+        public List<CtbRuleConfig> CtbRules { get; set; } = new();
+
         [JsonPropertyName("loadModes")]
         public List<LoadModeConfig> LoadModes { get; set; } = new();
     }
@@ -191,6 +197,30 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
     {
         public string CategoryNo { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
+    }
+
+    public class CtbRuleConfig
+    {
+        [JsonPropertyName("color")]
+        public int Color { get; set; }
+
+        [JsonPropertyName("preview")]
+        public string Preview { get; set; } = string.Empty;
+
+        [JsonPropertyName("screenUse")]
+        public string ScreenUse { get; set; } = string.Empty;
+
+        [JsonPropertyName("plotColor")]
+        public string PlotColor { get; set; } = string.Empty;
+
+        [JsonPropertyName("plotLineweight")]
+        public string PlotLineweight { get; set; } = string.Empty;
+
+        [JsonPropertyName("objects")]
+        public string Objects { get; set; } = string.Empty;
+
+        [JsonPropertyName("note")]
+        public string Note { get; set; } = string.Empty;
     }
 
     public class LoadModeConfig
