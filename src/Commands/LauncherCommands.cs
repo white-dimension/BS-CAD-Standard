@@ -77,23 +77,5 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 ReportUtils.Exception(ed, "BS 执行失败", ex);
             }
         }
-
-        [CommandMethod("BS_HELP")]
-        public void BsHelp()
-        {
-            Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
-
-            ed.WriteMessage("\n===== BS Toolkit Help =====");
-            ed.WriteMessage("\n");
-            ed.WriteMessage("\nBS                  Unified launcher menu");
-            ed.WriteMessage("\nBS_LAYER            Create standard layers");
-            ed.WriteMessage("\nBS_CHECK            Check layer standards");
-            ed.WriteMessage("\nBS_FIX_LAYER        Fix existing layer properties");
-            ed.WriteMessage("\nBS_FIX_MISSING      Create missing standard layers");
-            ed.WriteMessage("\nBS_LAYER_MODE       Switch layer visibility by mode");
-            ed.WriteMessage("\nBS_LAYER_ALL        Restore all layers");
-            ed.WriteMessage("\n");
-            ed.WriteMessage("\nRun BS to get started.\n");
-        }
     }
 }
