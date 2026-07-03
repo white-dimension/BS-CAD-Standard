@@ -221,6 +221,40 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("note")]
         public string Note { get; set; } = string.Empty;
+
+        // CTB editor fields (optional, with fallback in export)
+        [JsonPropertyName("editorColor")]
+        public string? EditorColor { get; set; }
+
+        [JsonPropertyName("dither")]
+        public string? Dither { get; set; }
+
+        [JsonPropertyName("grayscale")]
+        public string? Grayscale { get; set; }
+
+        [JsonPropertyName("penNumber")]
+        public string? PenNumber { get; set; }
+
+        [JsonPropertyName("virtualPen")]
+        public string? VirtualPen { get; set; }
+
+        [JsonPropertyName("screening")]
+        public int? Screening { get; set; }
+
+        [JsonPropertyName("linetype")]
+        public string? Linetype { get; set; }
+
+        [JsonPropertyName("adaptive")]
+        public string? Adaptive { get; set; }
+
+        [JsonPropertyName("endStyle")]
+        public string? EndStyle { get; set; }
+
+        [JsonPropertyName("joinStyle")]
+        public string? JoinStyle { get; set; }
+
+        [JsonPropertyName("fillStyle")]
+        public string? FillStyle { get; set; }
     }
 
     public class LoadModeConfig

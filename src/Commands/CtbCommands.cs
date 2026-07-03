@@ -153,6 +153,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 {
                     ed.WriteMessage($"\n\n[Export]");
                     ed.WriteMessage($"\nRules exported: {report.RuleCount}");
+                    ed.WriteMessage($"\nFormat: CTB editor fields");
                     ed.WriteMessage($"\nMarkdown: {report.MarkdownPath}");
                     ed.WriteMessage($"\nCSV: {report.CsvPath}");
                     ed.WriteMessage($"\n\n[Result]");
