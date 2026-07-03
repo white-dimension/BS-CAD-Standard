@@ -56,12 +56,12 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                     // ============ 4. 文字样式检查 ============
                     report.Lines.Add("");
                     report.Lines.Add("[4] 文字样式检查");
-                    CheckTextStyles(tr, db, report);
+                    CheckTextStyles(tr, db, config, report);
 
                     // ============ 5. 标注样式检查 ============
                     report.Lines.Add("");
                     report.Lines.Add("[5] 标注样式检查");
-                    CheckDimStyles(tr, db, report);
+                    CheckDimStyles(tr, db, config, report);
 
                     // ============ 6. 布局检查 ============
                     report.Lines.Add("");
@@ -71,7 +71,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                     // ============ 7. 图框 / 视口检查 ============
                     report.Lines.Add("");
                     report.Lines.Add("[7] 图框 / 视口检查");
-                    CheckFrameAndViewport(standardLayerNames, report);
+                    CheckFrameAndViewport(tr, db, standardLayerNames, report);
 
                     // ============ 8. 默认图层检查 ============
                     report.Lines.Add("");
@@ -132,15 +132,17 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             HashSet<string> standardLayerNames, TemplateCheckReport report)
         {
             LayerTable layerTable = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
-            int totalLayers = 0;
+            int totalAll = 0;
+            int checkableCount = 0;
             int existingStandard = 0;
             List<string> missing = new();
 
             foreach (ObjectId id in layerTable)
             {
+                totalAll++;
                 LayerTableRecord lr = (LayerTableRecord)tr.GetObject(id, OpenMode.ForRead);
-                if (LayerPropertyUtils.IsExcludedLayer(lr.Name)) continue;
-                totalLayers++;
+                if (!LayerPropertyUtils.IsExcludedLayer(lr.Name))
+                    checkableCount++;
             }
 
             foreach (LayerConfig lc in config.Layers)
@@ -151,7 +153,8 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                     missing.Add(lc.Name);
             }
 
-            AddInfo(report, $"当前图层总数：{totalLayers}");
+            AddInfo(report, $"当前图层总数（含默认图层）：{totalAll}");
+            AddInfo(report, $"参与标准检查图层数（不含 0 / Defpoints）：{checkableCount}");
             AddInfo(report, $"标准图层数量：{config.Layers.Count}");
 
             if (existingStandard == config.Layers.Count)
@@ -196,12 +199,16 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             }
         }
 
-        private static void CheckTextStyles(Transaction tr, Database db, TemplateCheckReport report)
+        private static void CheckTextStyles(Transaction tr, Database db, StandardConfig config, TemplateCheckReport report)
         {
             TextStyleTable tst = (TextStyleTable)tr.GetObject(db.TextStyleTableId, OpenMode.ForRead);
             int found = 0;
 
-            foreach (string style in StandardDefaults.TextStyles)
+            var targets = config.Styles.TextStyles.Count > 0
+                ? config.Styles.TextStyles
+                : StandardDefaults.TextStyles;
+
+            foreach (string style in targets)
             {
                 if (tst.Has(style))
                 {
@@ -218,12 +225,16 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                 AddWarn(report, "未发现任何 BS 标准文字样式");
         }
 
-        private static void CheckDimStyles(Transaction tr, Database db, TemplateCheckReport report)
+        private static void CheckDimStyles(Transaction tr, Database db, StandardConfig config, TemplateCheckReport report)
         {
             DimStyleTable dst = (DimStyleTable)tr.GetObject(db.DimStyleTableId, OpenMode.ForRead);
             int found = 0;
 
-            foreach (string style in StandardDefaults.DimStyles)
+            var targets = config.Styles.DimStyles.Count > 0
+                ? config.Styles.DimStyles
+                : StandardDefaults.DimStyles;
+
+            foreach (string style in targets)
             {
                 if (dst.Has(style))
                 {
@@ -267,49 +278,46 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             }
         }
 
-        private static void CheckFrameAndViewport(HashSet<string> standardLayerNames, TemplateCheckReport report)
+        private static void CheckFrameAndViewport(Transaction tr, Database db,
+            HashSet<string> standardLayerNames, TemplateCheckReport report)
         {
-            // Check for frame/title block layers
+            LayerTable layerTable = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
+
+            // Candidate layers from standard config
             var frameKeywords = new[] { "图框", "FR", "FRAME", "标题", "TITLE", "SHEET" };
-            bool frameFound = false;
-
-            foreach (string name in standardLayerNames)
-            {
-                foreach (string kw in frameKeywords)
-                {
-                    if (name.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        AddOk(report, $"图框相关图层已存在（标准层）：{name}");
-                        frameFound = true;
-                        break;
-                    }
-                }
-                if (frameFound) break;
-            }
-
-            if (!frameFound)
-                AddWarn(report, "未发现明确图框相关图层");
-
-            // Check for viewport layer
             var vpKeywords = new[] { "视口", "VP", "VPORT", "VIEWPORT" };
-            bool vpFound = false;
+
+            string? frameLayerInDwg = null;
+            string? vpLayerInDwg = null;
 
             foreach (string name in standardLayerNames)
             {
-                foreach (string kw in vpKeywords)
+                if (!layerTable.Has(name)) continue;
+
+                if (frameLayerInDwg == null && frameKeywords.Any(kw =>
+                    name.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
-                    if (name.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        AddOk(report, $"视口图层已存在（标准层）：{name}");
-                        vpFound = true;
-                        break;
-                    }
+                    frameLayerInDwg = name;
                 }
-                if (vpFound) break;
+
+                if (vpLayerInDwg == null && vpKeywords.Any(kw =>
+                    name.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    vpLayerInDwg = name;
+                }
+
+                if (frameLayerInDwg != null && vpLayerInDwg != null) break;
             }
 
-            if (!vpFound)
-                AddWarn(report, "未发现专用视口图层");
+            if (frameLayerInDwg != null)
+                AddOk(report, $"图框相关图层已存在：{frameLayerInDwg}");
+            else
+                AddWarn(report, "当前 DWG 未发现图框相关图层");
+
+            if (vpLayerInDwg != null)
+                AddOk(report, $"视口图层已存在：{vpLayerInDwg}");
+            else
+                AddWarn(report, "当前 DWG 未发现视口相关图层");
         }
 
         private static void CheckDefaultLayers(Transaction tr, Database db, TemplateCheckReport report)
@@ -358,7 +366,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
         {
             if (report.Lines.Any(l => l.Contains("[WARN]")))
                 report.Suggestions.Add("如缺失标准图层，请运行 BS_FIX_MISSING");
-            if (report.Lines.Any(l => l.Contains("CTB")))
+            if (report.Lines.Any(l => (l.Contains("[WARN]") || l.Contains("[ERROR]")) && l.Contains("CTB")))
                 report.Suggestions.Add("如需检查图层颜色，请运行 BS_CTB_CHECK");
             report.Suggestions.Add("如需导出 CTB 制作规则，请运行 BS_CTB_EXPORT");
         }
