@@ -64,7 +64,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                     {
                         LayerTableRecord layerRecord = (LayerTableRecord)tr.GetObject(id, OpenMode.ForRead);
                         string name = layerRecord.Name;
-                        if (IsExcludedLayer(name)) continue;
+                        if (LayerPropertyUtils.IsExcludedLayer(name)) continue;
                         if (!standardLayerNames.Contains(name))
                         {
                             report.NonStandardLayers.Add(name);
@@ -89,11 +89,11 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
         {
             // Color
             // Linetype
-            string currentLinetype = GetLinetypeName(tr, layerRecord);
+            string currentLinetype = LayerPropertyUtils.GetLinetypeName(tr, layerRecord);
             bool linetypeMismatch = !string.Equals(currentLinetype, config.Linetype, StringComparison.OrdinalIgnoreCase);
 
             // Transparency
-            int currentTransparency = GetTransparencyPercent(layerRecord);
+            int currentTransparency = LayerPropertyUtils.GetTransparencyPercent(layerRecord);
             bool transparencyMismatch = currentTransparency != config.Transparency;
 
             // Plot
@@ -130,7 +130,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                 // Fix linetype
                 if (linetypeMismatch)
                 {
-                    ObjectId linetypeId = ResolveLinetypeId(tr, config.Linetype, ed);
+                    ObjectId linetypeId = LayerPropertyUtils.ResolveLinetypeId(tr, config.Linetype, ed);
                     if (linetypeId != ObjectId.Null)
                     {
                         layerRecord.LinetypeObjectId = linetypeId;
@@ -141,7 +141,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                 // Fix transparency
                 if (transparencyMismatch)
                 {
-                    SetTransparencyPercent(layerRecord, config.Transparency);
+                    LayerPropertyUtils.SetTransparencyPercent(layerRecord, config.Transparency);
                     report.FixedTransparencyCount++;
                 }
 
@@ -168,94 +168,5 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             }
         }
 
-        private static ObjectId ResolveLinetypeId(Transaction tr, string linetypeName, Editor ed)
-        {
-            if (string.Equals(linetypeName, "Continuous", StringComparison.OrdinalIgnoreCase))
-            {
-                return HostApplicationServices.WorkingDatabase.ContinuousLinetype;
-            }
-
-            LinetypeTable lt = (LinetypeTable)tr.GetObject(
-                HostApplicationServices.WorkingDatabase.LinetypeTableId, OpenMode.ForRead);
-
-            if (lt.Has(linetypeName))
-            {
-                return lt[linetypeName];
-            }
-
-            // Try to load
-            try
-            {
-                lt.UpgradeOpen();
-                HostApplicationServices.WorkingDatabase.LoadLineTypeFile(linetypeName, "acadiso.lin");
-                lt.DowngradeOpen();
-
-                if (lt.Has(linetypeName))
-                {
-                    return lt[linetypeName];
-                }
-            }
-            catch
-            {
-                try
-                {
-                    HostApplicationServices.WorkingDatabase.LoadLineTypeFile(linetypeName, "acad.lin");
-                    if (lt.Has(linetypeName))
-                    {
-                        return lt[linetypeName];
-                    }
-                }
-                catch
-                {
-                    ed.WriteMessage($"\n[Warning] Cannot load linetype '{linetypeName}' for layer fix.");
-                }
-            }
-
-            return ObjectId.Null;
-        }
-
-        private static string GetLinetypeName(Transaction tr, LayerTableRecord layerRecord)
-        {
-            try
-            {
-                LinetypeTableRecord ltr = (LinetypeTableRecord)tr.GetObject(
-                    layerRecord.LinetypeObjectId, OpenMode.ForRead);
-                return ltr.Name;
-            }
-            catch
-            {
-                return "Continuous";
-            }
-        }
-
-        private static int GetTransparencyPercent(LayerTableRecord layerRecord)
-        {
-            try
-            {
-                byte alpha = layerRecord.Transparency.Alpha;
-                int percent = 100 - (int)Math.Round(alpha * 100.0 / 255.0);
-                if (percent < 0) return 0;
-                if (percent > 90) return 90;
-                return percent;
-            }
-            catch
-            {
-                return 0;
-            }
-        }
-
-        private static void SetTransparencyPercent(LayerTableRecord layerRecord, int percent)
-        {
-            if (percent < 0) percent = 0;
-            if (percent > 90) percent = 90;
-            byte alpha = (byte)(255 - (byte)Math.Round(percent * 255.0 / 100.0));
-            layerRecord.Transparency = new Transparency(alpha);
-        }
-
-        private static bool IsExcludedLayer(string name)
-        {
-            string[] excluded = { "0", "Defpoints" };
-            return excluded.Any(e => string.Equals(e, name, StringComparison.OrdinalIgnoreCase));
-        }
     }
 }
