@@ -5,15 +5,16 @@ param(
 $ErrorActionPreference = "Stop"
 
 # ── 路径 ──
-$PluginRoot   = "D:\01_DesignProjects\BS_CAD_STANDARD_V10_Plugin"
-$PackageRoot  = "D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package"
-$TestPkgRoot  = "D:\01_DesignProjects\BS_CAD_STANDARD_V10_TestPackage"
-$DllSource    = Join-Path $PluginRoot "src\BS_CAD_STANDARD_V10_Plugin\bin\$Configuration\net10.0\BS_CAD_STANDARD_V10_Plugin.dll"
+$RepoRoot     = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$PluginRoot   = $RepoRoot
+$PackageRoot  = Join-Path $RepoRoot "standard"
+$TestPkgRoot  = Join-Path $RepoRoot "test-package"
+$DllSource    = Join-Path $PluginRoot "src\bin\$Configuration\net10.0\BS_CAD_STANDARD_V10_Plugin.dll"
 
 # ── Step 1: Build ──
 Write-Host "=== Step 1: dotnet build ===" -ForegroundColor Cyan
 Set-Location $PluginRoot
-dotnet build "src\BS_CAD_STANDARD_V10_Plugin\BS_CAD_STANDARD_V10_Plugin.csproj" --configuration $Configuration --no-restore
+dotnet build "src\BS_CAD_STANDARD_V10_Plugin.csproj" --configuration $Configuration --no-restore
 if ($LASTEXITCODE -ne 0) { throw "dotnet build failed (exit code $LASTEXITCODE)" }
 Write-Host "Build OK" -ForegroundColor Green
 
