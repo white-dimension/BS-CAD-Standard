@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using BS_CAD_STANDARD_V10_Plugin.Core;
 using BS_CAD_STANDARD_V10_Plugin.Utils;
 
@@ -14,6 +13,10 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
         public List<string> MissingCoreLayers { get; set; } = new();
         public List<string> PropertyDeviations { get; set; } = new();
         public List<string> ExtraLayers { get; set; } = new();
+        public List<string> ColorDeviations { get; set; } = new();
+        public List<string> LinetypeDeviations { get; set; } = new();
+        public List<string> TransparencyDeviations { get; set; } = new();
+        public List<string> PlotDeviations { get; set; } = new();
         public List<string> MissingTextStyles { get; set; } = new();
         public List<string> TextStyleFontDeviations { get; set; } = new();
         public List<string> MissingDimStyles { get; set; } = new();
@@ -27,7 +30,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
     {
         public static CheckResult RunFullCheck(StandardConfig config)
         {
-            CheckResult result = new CheckResult();
+            CheckResult result = new();
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
 
@@ -35,29 +38,18 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             {
                 try
                 {
-                    // 1 & 2 & 3. 图层检查
                     PerformLayerChecks(db, tr, config, result);
-
-                    // 4. 文字样式
                     CheckTextStyles(db, tr, config, result);
-
-                    // 5. 标注样式
                     CheckDimStyles(db, tr, config, result);
-
-                    // 6. 多重引线样式
                     CheckMLeaderStyle(db, tr, result);
-
-                    // 7. 单位
                     result.CurrentUnits = Convert.ToInt32(AcadUtils.SafeGetSystemVariable("INSUNITS") ?? 0);
-
-                    // 8. 打印样式
                     CheckPlotStyle(db, tr, result);
 
                     tr.Commit();
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
-                    doc.Editor.WriteMessage($"\n[异常] 检查引擎运行出错: {ex.Message}");
+                    doc.Editor.WriteMessage($"\n[Exception] Check engine failed: {ex.Message}");
                 }
             }
 
@@ -66,82 +58,109 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
         private static void PerformLayerChecks(Database db, Transaction tr, StandardConfig config, CheckResult result)
         {
-            LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
-            HashSet<string> jsonLayerNames = new HashSet<string>(config.Layers.Select(l => l.Name), StringComparer.OrdinalIgnoreCase);
+            LayerTable layerTable = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
+            HashSet<string> standardLayerNames = new(config.Layers.Select(l => l.Name), StringComparer.OrdinalIgnoreCase);
 
-            // 检查核心图层缺失和属性
-            foreach (var layerConfig in config.Layers)
+            foreach (LayerConfig layerConfig in config.Layers)
             {
-                if (lt.Has(layerConfig.Name))
-                {
-                    LayerTableRecord ltr = (LayerTableRecord)tr.GetObject(lt[layerConfig.Name], OpenMode.ForRead);
-
-                    // 如果是核心图层，检查属性
-                    if (layerConfig.Core)
-                    {
-                        CheckSingleLayerProperties(ltr, layerConfig, result, tr);
-                    }
-                }
-                else if (layerConfig.Core)
+                if (!layerTable.Has(layerConfig.Name))
                 {
                     result.MissingCoreLayers.Add(layerConfig.Name);
+                    continue;
                 }
+
+                LayerTableRecord layerRecord = (LayerTableRecord)tr.GetObject(layerTable[layerConfig.Name], OpenMode.ForRead);
+                CheckSingleLayerProperties(layerRecord, layerConfig, result, tr);
             }
 
-            // 检查额外非标准图层
-            foreach (ObjectId id in lt)
+            foreach (ObjectId id in layerTable)
             {
-                LayerTableRecord ltr = (LayerTableRecord)tr.GetObject(id, OpenMode.ForRead);
-                string name = ltr.Name;
+                LayerTableRecord layerRecord = (LayerTableRecord)tr.GetObject(id, OpenMode.ForRead);
+                string name = layerRecord.Name;
 
                 if (IsStandardDefaultLayer(name)) continue;
-
-                if (!jsonLayerNames.Contains(name))
+                if (!standardLayerNames.Contains(name))
                 {
                     result.ExtraLayers.Add(name);
                 }
             }
         }
 
-        private static void CheckSingleLayerProperties(LayerTableRecord ltr, LayerConfig config, CheckResult result, Transaction tr)
+        private static void CheckSingleLayerProperties(LayerTableRecord layerRecord, LayerConfig config, CheckResult result, Transaction tr)
         {
-            // 1. 颜色
-            if (ltr.Color.ColorIndex != config.Color)
+            if (layerRecord.Color.ColorIndex != config.Color)
             {
-                result.PropertyDeviations.Add($"{ltr.Name}: Color 应为 {config.Color}, 实际为 {ltr.Color.ColorIndex}");
+                AddLayerDeviation(
+                    result.ColorDeviations,
+                    result,
+                    $"{layerRecord.Name}: expected color {config.Color}, actual {layerRecord.Color.ColorIndex}");
             }
 
-            // 2. 线型
-            LinetypeTableRecord ltr_lt = (LinetypeTableRecord)tr.GetObject(ltr.LinetypeObjectId, OpenMode.ForRead);
-            if (!string.Equals(ltr_lt.Name, config.Linetype, StringComparison.OrdinalIgnoreCase))
+            LinetypeTableRecord linetypeRecord = (LinetypeTableRecord)tr.GetObject(layerRecord.LinetypeObjectId, OpenMode.ForRead);
+            if (!string.Equals(linetypeRecord.Name, config.Linetype, StringComparison.OrdinalIgnoreCase))
             {
-                result.PropertyDeviations.Add($"{ltr.Name}: Linetype 应为 {config.Linetype}, 实际为 {ltr_lt.Name}");
+                AddLayerDeviation(
+                    result.LinetypeDeviations,
+                    result,
+                    $"{layerRecord.Name}: expected linetype {config.Linetype}, actual {linetypeRecord.Name}");
             }
 
-            // 3. 线宽
-            double currentLw = AcadUtils.LineWeightToMm(ltr.LineWeight);
-            if (Math.Abs(currentLw - config.Lineweight) > 0.001)
+            double currentLineweight = AcadUtils.LineWeightToMm(layerRecord.LineWeight);
+            if (Math.Abs(currentLineweight - config.Lineweight) > 0.001)
             {
-                result.PropertyDeviations.Add($"{ltr.Name}: Lineweight 应为 {config.Lineweight}mm, 实际为 {(currentLw < 0 ? "默认" : currentLw + "mm")}");
+                result.PropertyDeviations.Add($"{layerRecord.Name}: lineweight expected {config.Lineweight}mm, actual {(currentLineweight < 0 ? "default" : currentLineweight + "mm")}");
             }
 
-            // 4. 打印
-            if (ltr.IsPlottable != config.Plot)
+            int currentTransparency = GetTransparencyPercent(layerRecord);
+            if (currentTransparency != config.Transparency)
             {
-                result.PropertyDeviations.Add($"{ltr.Name}: Plot 应为 {config.Plot}, 实际为 {ltr.IsPlottable}");
+                AddLayerDeviation(
+                    result.TransparencyDeviations,
+                    result,
+                    $"{layerRecord.Name}: expected transparency {config.Transparency}, actual {currentTransparency}");
+            }
+
+            if (layerRecord.IsPlottable != config.Plot)
+            {
+                AddLayerDeviation(
+                    result.PlotDeviations,
+                    result,
+                    $"{layerRecord.Name}: expected plot {config.Plot}, actual {layerRecord.IsPlottable}");
+            }
+        }
+
+        private static void AddLayerDeviation(List<string> category, CheckResult result, string message)
+        {
+            category.Add(message);
+            result.PropertyDeviations.Add(message);
+        }
+
+        private static int GetTransparencyPercent(LayerTableRecord layerRecord)
+        {
+            try
+            {
+                byte alpha = layerRecord.Transparency.Alpha;
+                int percent = 100 - (int)Math.Round(alpha * 100.0 / 255.0);
+                if (percent < 0) return 0;
+                if (percent > 90) return 90;
+                return percent;
+            }
+            catch
+            {
+                return 0;
             }
         }
 
         private static void CheckTextStyles(Database db, Transaction tr, StandardConfig config, CheckResult result)
         {
-            TextStyleTable st = (TextStyleTable)tr.GetObject(db.TextStyleTableId, OpenMode.ForRead);
-            List<string> targets = (config.Styles.TextStyles != null && config.Styles.TextStyles.Count > 0)
-                                   ? config.Styles.TextStyles
-                                   : StandardDefaults.TextStyles;
+            TextStyleTable textStyleTable = (TextStyleTable)tr.GetObject(db.TextStyleTableId, OpenMode.ForRead);
+            List<string> targets = config.Styles.TextStyles != null && config.Styles.TextStyles.Count > 0
+                ? config.Styles.TextStyles
+                : StandardDefaults.TextStyles;
 
             foreach (string style in targets)
             {
-                if (!st.Has(style))
+                if (!textStyleTable.Has(style))
                 {
                     result.MissingTextStyles.Add(style);
                     continue;
@@ -157,14 +176,14 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
         private static void CheckDimStyles(Database db, Transaction tr, StandardConfig config, CheckResult result)
         {
-            DimStyleTable dt = (DimStyleTable)tr.GetObject(db.DimStyleTableId, OpenMode.ForRead);
-            List<string> targets = (config.Styles.DimStyles != null && config.Styles.DimStyles.Count > 0)
-                                   ? config.Styles.DimStyles
-                                   : StandardDefaults.DimStyles;
+            DimStyleTable dimStyleTable = (DimStyleTable)tr.GetObject(db.DimStyleTableId, OpenMode.ForRead);
+            List<string> targets = config.Styles.DimStyles != null && config.Styles.DimStyles.Count > 0
+                ? config.Styles.DimStyles
+                : StandardDefaults.DimStyles;
 
             foreach (string style in targets)
             {
-                if (!dt.Has(style))
+                if (!dimStyleTable.Has(style))
                 {
                     result.MissingDimStyles.Add(style);
                 }
@@ -179,8 +198,8 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
         private static void CheckPlotStyle(Database db, Transaction tr, CheckResult result)
         {
-            LayoutManager lm = LayoutManager.Current;
-            ObjectId layoutId = lm.GetLayoutId(lm.CurrentLayout);
+            LayoutManager layoutManager = LayoutManager.Current;
+            ObjectId layoutId = layoutManager.GetLayoutId(layoutManager.CurrentLayout);
             Layout layout = (Layout)tr.GetObject(layoutId, OpenMode.ForRead);
 
             result.CurrentLayoutName = layout.LayoutName;
