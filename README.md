@@ -6,7 +6,7 @@ AutoCAD 图纸标准化工具集，用于室内设计 / 展厅 / 工装项目的
 
 ## 1. 项目定位
 
-BS-CAD-Standard 是一个基于 AutoCAD .NET 的 CAD 标准工具包，当前 **v0.7-ctb** 版本在图层标准核心闭环基础上，新增了 CTB 打印颜色规则检查和导出能力。
+BS-CAD-Standard 是一个基于 AutoCAD .NET 的 CAD 标准工具包，当前 **v0.8-template** 版本在图层和 CTB 基础上，新增了模板基础环境检查能力。
 
 当前核心能力：
 
@@ -21,7 +21,7 @@ BS-CAD-Standard 是一个基于 AutoCAD .NET 的 CAD 标准工具包，当前 **
 
 ## 2. 当前版本
 
-**v0.7-ctb / CTB rule documentation**
+**v0.8-template / template environment check**
 
 v0.6-core 已完成图层标准核心闭环：
 
@@ -35,7 +35,11 @@ v0.7-ctb 新增 CTB 规则闭环：
 JSON ctbRules → 检查图层颜色 → 导出 Markdown / CSV → 人工制作 CTB
 ```
 
-`BS_CTB_EXPORT` 不生成 `.ctb` 文件，只导出规则说明供人工制作 / 校对 AutoCAD 打印样式表。
+v0.8-template 新增模板基础环境检查，不自动生成 DWT，只做诊断。
+
+```
+BS_TEMPLATE_CHECK → 单位 / 图层 / CTB / 文字样式 / 标注样式 / 布局 / 图框 / 视口
+```
 
 ---
 
@@ -106,6 +110,7 @@ dotnet build
 | `BS_LAYER_ALL` | 恢复所有图层显示 |
 | `BS_CTB_CHECK` | 检查当前图纸图层颜色是否符合 CTB 规则 |
 | `BS_CTB_EXPORT` | 导出 CTB 规则说明文件 |
+| `BS_TEMPLATE_CHECK` | 检查当前 DWG 的模板基础环境（单位 / 图层 / CTB / 文字 / 标注 / 布局 / 图框 / 视口） |
 
 ---
 
@@ -149,6 +154,7 @@ BS_CTB_CHECK
 [6] 恢复全部图层        BS_LAYER_ALL
 [7] 检查 CTB 颜色规则    BS_CTB_CHECK
 [8] 导出 CTB 规则说明    BS_CTB_EXPORT
+[9] 模板基础环境检查    BS_TEMPLATE_CHECK
 [0] 退出
 ```
 
@@ -259,6 +265,19 @@ exports/BS_CAD_STANDARD_CTB_RULES.csv
 ---
 
 ## 15. 版本记录
+
+### v0.8-template
+
+新增：
+
+- `BS_TEMPLATE_CHECK`：检查当前 DWG 模板基础环境
+
+状态：
+
+- 图层标准核心闭环保持稳定
+- CTB 规则已支持检查和文档导出
+- 模板基础环境诊断已可用
+- 编译通过：0 errors
 
 ### v0.7-ctb
 

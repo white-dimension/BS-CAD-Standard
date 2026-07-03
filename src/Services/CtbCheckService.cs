@@ -51,7 +51,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             Editor ed = doc.Editor;
 
             HashSet<string> standardLayerNames = new(config.Layers.Select(l => l.Name), StringComparer.OrdinalIgnoreCase);
-            HashSet<int> ctbColors = new(config.CtbRules.Select(r => r.Color));
+            HashSet<int> ctbColors = new((config.CtbRules ?? new List<CtbRuleConfig>()).Select(r => r.Color));
 
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
