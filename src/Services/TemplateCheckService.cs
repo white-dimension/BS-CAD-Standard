@@ -364,11 +364,17 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
         private static void BuildSuggestions(TemplateCheckReport report)
         {
-            if (report.Lines.Any(l => l.Contains("[WARN]")))
+            bool hasMissingLayers = report.Lines.Any(l => l.Contains("[WARN]") && l.Contains("缺失"));
+            bool hasCtbIssue = report.Lines.Any(l => l.Contains("[WARN]") &&
+                (l.Contains("CTB") || l.Contains("打印样式")));
+            bool hasColorIssue = report.Lines.Any(l => l.Contains("Invalid CTB") || l.Contains("not defined in ctbRules"));
+
+            if (hasMissingLayers)
                 report.Suggestions.Add("如缺失标准图层，请运行 BS_FIX_MISSING");
-            if (report.Lines.Any(l => (l.Contains("[WARN]") || l.Contains("[ERROR]")) && l.Contains("CTB")))
+            if (hasCtbIssue)
+                report.Suggestions.Add("如需设置标准 CTB，请使用 BS_CTB_EXPORT 导出规则后手动制作 / 设置 BS_CAD_STANDARD.ctb");
+            if (hasColorIssue)
                 report.Suggestions.Add("如需检查图层颜色，请运行 BS_CTB_CHECK");
-            report.Suggestions.Add("如需导出 CTB 制作规则，请运行 BS_CTB_EXPORT");
         }
 
         private static void AddOk(TemplateCheckReport r, string msg) { r.OkCount++; r.Lines.Add($"  [OK] {msg}"); }

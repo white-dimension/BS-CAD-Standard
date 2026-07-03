@@ -18,7 +18,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         public const string BackupDimConfigPath = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Plugin\config\BS_DimStyle_Standard_V10.json";
 
         // CTB 文件名
-        public const string CtbFileName = "BS_CAD_STANDARD_V10.ctb";
+        public const string CtbFileName = "BS_CAD_STANDARD.ctb";
 
         // DWT 路径
         public const string DwtPath = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package\templates\BS_CAD_STANDARD_V10.dwt";
