@@ -9,6 +9,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 {
     public static class ConfigurationService
     {
+        private const string V06StandardConfigFile = "BS_CAD_Standard_v0.6.json";
+        private const string V10StandardConfigFile = "BS_CAD_Standard_V10.json";
+
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
@@ -20,32 +23,55 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         public static StandardConfig? LoadStandardConfig(Editor ed)
         {
-            string? path = ResolveConfigFile(ed, "主配置文件", "BS_CAD_Standard_V10.json");
-            CurrentStandardConfigPath = path ?? string.Empty;
+            string? v06Path = ResolveConfigFile(ed, "CAD standard config v0.6", V06StandardConfigFile, reportMissing: false);
+            if (v06Path != null)
+            {
+                StandardConfig? v06Config = LoadStandardConfigV06(ed, v06Path);
+                if (v06Config != null)
+                {
+                    CurrentStandardConfigPath = v06Path;
+                    ed.WriteMessage($"\nLoaded CAD standard config:\n{ToDisplayConfigPath(v06Path)}");
+                    return v06Config;
+                }
 
+                ed.WriteMessage("\n[Warning] v0.6 config failed to load, fallback to V10 config.");
+            }
+            else
+            {
+                ed.WriteMessage("\nv0.6 config not found, fallback to:\nconfig\\BS_CAD_Standard_V10.json");
+            }
+
+            string? path = ResolveConfigFile(ed, "CAD standard config V10", V10StandardConfigFile);
+            CurrentStandardConfigPath = path ?? string.Empty;
             if (path == null) return null;
 
-            return LoadJson<StandardConfig>(ed, path, "主配置文件");
+            StandardConfig? config = LoadJson<StandardConfig>(ed, path, "CAD standard config V10");
+            if (config != null)
+            {
+                ed.WriteMessage($"\nLoaded CAD standard config:\n{ToDisplayConfigPath(path)}");
+            }
+
+            return config;
         }
 
         public static DimStyleStandardConfig? LoadDimStyleConfig(Editor ed)
         {
-            string? path = ResolveConfigFile(ed, "标注样式配置文件", "BS_DimStyle_Standard_V10.json");
+            string? path = ResolveConfigFile(ed, "dimension style config", "BS_DimStyle_Standard_V10.json");
             CurrentDimStyleConfigPath = path ?? string.Empty;
 
             if (path == null) return null;
 
-            return LoadJson<DimStyleStandardConfig>(ed, path, "标注样式配置文件");
+            return LoadJson<DimStyleStandardConfig>(ed, path, "dimension style config");
         }
 
         public static MigrationRulesConfig? LoadMigrationRules(Editor ed)
         {
-            string? path = ResolveConfigFile(ed, "图层迁移规则配置文件", "BS_Layer_Migration_Rules_V10.json");
+            string? path = ResolveConfigFile(ed, "layer migration rules config", "BS_Layer_Migration_Rules_V10.json");
             CurrentMigrationRulesPath = path ?? string.Empty;
 
             if (path == null) return null;
 
-            return LoadJson<MigrationRulesConfig>(ed, path, "图层迁移规则配置文件");
+            return LoadJson<MigrationRulesConfig>(ed, path, "layer migration rules config");
         }
 
         public static StandardContext? CreateContext(Editor ed, bool includeDimStyleConfig = false)
@@ -56,51 +82,21 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
             DimStyleStandardConfig? dimStyleConfig = includeDimStyleConfig ? LoadDimStyleConfig(ed) : null;
             if (includeDimStyleConfig && dimStyleConfig == null)
             {
-                ReportUtils.Warning(ed, "标注样式配置文件缺失或解析失败，跳过标注样式初始化。");
+                ReportUtils.Warning(ed, "Dimension style config is missing or invalid; skipped dim style initialization.");
             }
 
             return StandardContext.Create(standardConfig, dimStyleConfig, CurrentStandardConfigPath, CurrentDimStyleConfigPath);
         }
 
-        /// <summary>
-        /// 按优先级搜索配置文件。查找顺序（先命中先返回）：
-        ///
-        ///   ① DLL 所在目录的上一级 config
-        ///      测试包场景: E:\BS_CAD_STANDARD_V10_TestPackage\config\
-        ///
-        ///   ② DLL 所在目录下的 config
-        ///      测试包场景: E:\BS_CAD_STANDARD_V10_TestPackage\plugin\config\
-        ///
-        ///   ③ 环境变量 BS_CAD_STANDARD_ROOT 指向目录下的 config
-        ///
-        ///   ④ 插件项目 config 备用路径（硬编码，仅开发环境）
-        ///      D:\01_DesignProjects\BS_CAD_STANDARD_V10_Plugin\config\
-        ///
-        ///   ⑤ 开发机固定标准包路径（硬编码，仅开发环境兜底）
-        ///      D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package\config\
-        /// </summary>
-        private static string? ResolveConfigFile(Editor ed, string label, string filename)
+        private static string? ResolveConfigFile(Editor ed, string label, string filename, bool reportMissing = true)
         {
             var searchPaths = new List<string>();
 
-            // ── ① DLL 所在目录的上一级 config ──
-            // 测试包 root/plugin/xxx.dll → root/config/xxx.json
-            TryAddAssemblyRelativePath(searchPaths, filename, goUp: true);
-
-            // ── ② DLL 所在目录下的 config ──
-            // 测试包 root/plugin/xxx.dll → root/plugin/config/xxx.json
-            TryAddAssemblyRelativePath(searchPaths, filename, goUp: false);
-
-            // ── ③ 环境变量 BS_CAD_STANDARD_ROOT → config ──
+            TryAddAssemblyConfigPaths(searchPaths, filename);
             TryAddEnvPath(searchPaths, filename);
-
-            // ── ④ 插件项目 config 备用路径（硬编码，开发环境）──
             TryAddBackupPath(searchPaths, filename);
-
-            // ── ⑤ 开发机固定标准包路径（硬编码，最后兜底）──
             TryAddPackagePath(searchPaths, filename);
 
-            // 去重搜索
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (string raw in searchPaths)
             {
@@ -112,43 +108,40 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
                 if (File.Exists(normalized))
                 {
-                    ed.WriteMessage($"\n[信息] 找到 {label}: {normalized}");
+                    ed.WriteMessage($"\n[Info] Found {label}: {normalized}");
                     return normalized;
                 }
             }
 
-            string searched = string.Join("\n  ", visited);
-            ReportUtils.Error(ed, $"找不到 {label}。已检查路径:\n  {searched}");
+            if (reportMissing)
+            {
+                string searched = string.Join("\n  ", visited);
+                ReportUtils.Error(ed, $"Cannot find {label}. Checked paths:\n  {searched}");
+            }
+
             return null;
         }
 
-        /// <summary>
-        /// 添加相对于 DLL 所在目录的 config 路径。
-        /// goUp=true  → DLL 的上一级目录下的 config（测试包包根）
-        /// goUp=false → DLL 所在目录下的 config
-        /// </summary>
-        private static void TryAddAssemblyRelativePath(List<string> paths, string filename, bool goUp)
+        private static void TryAddAssemblyConfigPaths(List<string> paths, string filename)
         {
             try
             {
                 string assemblyDir = Path.GetDirectoryName(typeof(ConfigurationService).Assembly.Location) ?? "";
                 if (string.IsNullOrEmpty(assemblyDir)) return;
 
-                string baseDir = goUp
-                    ? (Path.GetDirectoryName(assemblyDir) ?? assemblyDir)
-                    : assemblyDir;
-
-                paths.Add(Path.Combine(baseDir, "config", filename));
+                DirectoryInfo? dir = new DirectoryInfo(assemblyDir);
+                while (dir != null)
+                {
+                    paths.Add(Path.Combine(dir.FullName, "config", filename));
+                    dir = dir.Parent;
+                }
             }
             catch
             {
-                // 静默跳过，当前环境可能无法读取 Assembly.Location
+                // Ignore unreadable assembly locations.
             }
         }
 
-        /// <summary>
-        /// 添加环境变量 BS_CAD_STANDARD_ROOT → config 下的路径
-        /// </summary>
         private static void TryAddEnvPath(List<string> paths, string filename)
         {
             try
@@ -159,31 +152,25 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
             }
             catch
             {
-                // 静默跳过，环境变量可能不可读
+                // Ignore unreadable environment variables.
             }
         }
 
-        /// <summary>
-        /// 添加插件项目备用路径（硬编码，仅开发环境）
-        /// </summary>
         private static void TryAddBackupPath(List<string> paths, string filename)
         {
             try
             {
-                if (filename == "BS_CAD_Standard_V10.json")
+                if (filename == V10StandardConfigFile)
                     paths.Add(StandardPaths.BackupConfigPath);
                 else if (filename == "BS_DimStyle_Standard_V10.json")
                     paths.Add(StandardPaths.BackupDimConfigPath);
             }
             catch
             {
-                // 静默跳过
+                // Ignore invalid backup paths.
             }
         }
 
-        /// <summary>
-        /// 添加开发机固定标准包路径（硬编码，最后兜底）
-        /// </summary>
         private static void TryAddPackagePath(List<string> paths, string filename)
         {
             try
@@ -192,7 +179,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
             }
             catch
             {
-                // 静默跳过
+                // Ignore invalid package paths.
             }
         }
 
@@ -205,21 +192,128 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
                 if (config == null)
                 {
-                    ReportUtils.Error(ed, $"{label} JSON 反序列化结果为空: {path}");
+                    ReportUtils.Error(ed, $"{label} JSON deserialized to null: {path}");
                 }
 
                 return config;
             }
             catch (JsonException ex)
             {
-                ReportUtils.Error(ed, $"{label} JSON 解析失败: {path} ({ex.Message})");
+                ReportUtils.Error(ed, $"{label} JSON parse failed: {path} ({ex.Message})");
             }
             catch (Exception ex)
             {
-                ReportUtils.Exception(ed, $"读取{label}失败: {path}", ex);
+                ReportUtils.Exception(ed, $"Failed to read {label}: {path}", ex);
             }
 
             return null;
+        }
+
+        private static StandardConfig? LoadStandardConfigV06(Editor ed, string path)
+        {
+            try
+            {
+                string jsonContent = File.ReadAllText(path);
+                BsCadStandardV06? source = JsonSerializer.Deserialize<BsCadStandardV06>(jsonContent, JsonOptions);
+                if (source == null)
+                {
+                    ReportUtils.Error(ed, $"v0.6 CAD standard JSON deserialized to null: {path}");
+                    return null;
+                }
+
+                StandardConfig config = new()
+                {
+                    Version = source.Version,
+                    StandardName = source.StandardName,
+                    PackageName = source.PackageName,
+                    Ctb = source.Ctb
+                };
+
+                foreach (BsCadLayerV06 layer in source.Layers)
+                {
+                    config.Layers.Add(MapLayerV06(layer));
+                }
+
+                return config;
+            }
+            catch (JsonException ex)
+            {
+                ReportUtils.Error(ed, $"v0.6 CAD standard JSON parse failed: {path} ({ex.Message})");
+            }
+            catch (Exception ex)
+            {
+                ReportUtils.Exception(ed, $"Failed to read v0.6 CAD standard config: {path}", ex);
+            }
+
+            return null;
+        }
+
+        private static LayerConfig MapLayerV06(BsCadLayerV06 source)
+        {
+            return new LayerConfig
+            {
+                Name = source.Name,
+                Color = source.Color,
+                Linetype = string.IsNullOrWhiteSpace(source.Linetype) ? "Continuous" : source.Linetype,
+                Lineweight = ParseLineweight(source.Lineweight),
+                Transparency = source.Transparency,
+                Plot = ParsePlot(source.Plot),
+                Core = true,
+                Category = ResolveCategory(source),
+                Description = source.Description
+            };
+        }
+
+        private static double ParseLineweight(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return -1.0;
+
+            string text = value.Trim();
+            if (string.Equals(text, "ByCTB", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(text, "ByLayer", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(text, "Default", StringComparison.OrdinalIgnoreCase))
+            {
+                return -1.0;
+            }
+
+            text = text.Replace("mm", "", StringComparison.OrdinalIgnoreCase).Trim();
+            return double.TryParse(text, out double mm) ? mm : -1.0;
+        }
+
+        private static bool ParsePlot(JsonElement plot)
+        {
+            if (plot.ValueKind == JsonValueKind.False) return false;
+            if (plot.ValueKind == JsonValueKind.True ||
+                plot.ValueKind == JsonValueKind.Undefined ||
+                plot.ValueKind == JsonValueKind.Null)
+            {
+                return true;
+            }
+
+            if (plot.ValueKind == JsonValueKind.String)
+            {
+                string? value = plot.GetString();
+                if (string.Equals(value, "lightOrNoPlot", StringComparison.OrdinalIgnoreCase)) return false;
+                if (string.Equals(value, "onDemand", StringComparison.OrdinalIgnoreCase)) return true;
+                if (bool.TryParse(value, out bool parsed)) return parsed;
+            }
+
+            return true;
+        }
+
+        private static string ResolveCategory(BsCadLayerV06 source)
+        {
+            if (!string.IsNullOrWhiteSpace(source.CategoryCode)) return source.CategoryCode;
+            if (!string.IsNullOrWhiteSpace(source.Category)) return source.Category;
+
+            string[] parts = (source.Name ?? string.Empty).Split('-');
+            return parts.Length >= 2 ? parts[1] : string.Empty;
+        }
+
+        private static string ToDisplayConfigPath(string path)
+        {
+            int index = path.LastIndexOf("\\config\\", StringComparison.OrdinalIgnoreCase);
+            return index >= 0 ? path.Substring(index + 1) : path;
         }
     }
 }

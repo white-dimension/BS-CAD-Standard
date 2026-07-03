@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace BS_CAD_STANDARD_V10_Plugin.Core
@@ -61,5 +62,62 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("description")]
         public string Description { get; set; } = string.Empty;
+    }
+
+    public class BsCadStandardV06
+    {
+        [JsonPropertyName("version")]
+        public string Version { get; set; } = string.Empty;
+
+        [JsonPropertyName("standardName")]
+        public string StandardName { get; set; } = string.Empty;
+
+        [JsonPropertyName("packageName")]
+        public string PackageName { get; set; } = string.Empty;
+
+        [JsonPropertyName("ctb")]
+        public string Ctb { get; set; } = string.Empty;
+
+        [JsonPropertyName("layerCount")]
+        public int LayerCount { get; set; }
+
+        [JsonPropertyName("layers")]
+        public List<BsCadLayerV06> Layers { get; set; } = new();
+    }
+
+    public class BsCadLayerV06
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("color")]
+        public short Color { get; set; }
+
+        [JsonPropertyName("linetype")]
+        public string Linetype { get; set; } = "Continuous";
+
+        [JsonPropertyName("lineweight")]
+        public string Lineweight { get; set; } = "ByCTB";
+
+        [JsonPropertyName("transparency")]
+        public int Transparency { get; set; }
+
+        [JsonPropertyName("plot")]
+        public JsonElement Plot { get; set; }
+
+        [JsonPropertyName("core")]
+        public bool Core { get; set; } = true;
+
+        [JsonPropertyName("category")]
+        public string Category { get; set; } = string.Empty;
+
+        [JsonPropertyName("categoryCode")]
+        public string CategoryCode { get; set; } = string.Empty;
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+
+        [JsonPropertyName("displayName")]
+        public string DisplayName { get; set; } = string.Empty;
     }
 }
