@@ -13,57 +13,155 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
     public class CategoryInfo
     {
         public string Code { get; set; } = string.Empty;
+        public string Prefix { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string CategoryNo { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
         public int LayerCount { get; set; }
+        public int OrderIndex { get; set; }
     }
 
     public class LayerService
     {
         public static List<CategoryInfo> GetCategories(StandardConfig config)
         {
+            // Priority 1: Use JSON categories array with actual layer counts
+            if (config.ConfigCategories.Count > 0)
+            {
+                return config.ConfigCategories
+                    .Select(cat => new CategoryInfo
+                    {
+                        CategoryNo = cat.CategoryNo,
+                        CategoryName = cat.CategoryName,
+                        Code = cat.CategoryNo,
+                        Prefix = cat.CategoryNo,
+                        Description = cat.CategoryName,
+                        LayerCount = config.Layers.Count(l =>
+                            string.Equals(l.CategoryNo, cat.CategoryNo, StringComparison.OrdinalIgnoreCase)),
+                        OrderIndex = int.TryParse(cat.CategoryNo, out int n) ? n : 0
+                    })
+                    .OrderBy(c => c.OrderIndex)
+                    .ToList();
+            }
+
+            // Priority 2: Fallback — group by layer name prefix
             return config.Layers
-                .GroupBy(l => l.Category)
+                .Select((layer, index) => new { layer, index })
+                .GroupBy(l => GetCategoryPrefix(l.layer))
                 .Select(g => new CategoryInfo
                 {
                     Code = g.Key,
-                    Description = GetCategoryDescription(g.Key),
-                    LayerCount = g.Count()
+                    Prefix = g.Key,
+                    Description = GetCategoryDescriptionFallback(g.Key),
+                    CategoryNo = g.Key,
+                    CategoryName = GetCategoryDescriptionFallback(g.Key),
+                    LayerCount = g.Count(),
+                    OrderIndex = g.Min(x => GetLayerOrder(x.layer, x.index))
                 })
-                .OrderBy(c => c.Code)
+                .OrderBy(c => c.OrderIndex)
                 .ToList();
-        }
-
-        private static string GetCategoryDescription(string code)
-        {
-            return code switch
-            {
-                "AR" => "建筑",
-                "IN" => "室内",
-                "FL" => "地面",
-                "CE" => "天花",
-                "FU" => "家具",
-                "EX" => "展厅",
-                "LI" => "灯具",
-                "EL" => "强电",
-                "WK" => "弱电",
-                "EQ" => "设备",
-                "FI" => "消防",
-                "PL" => "给排水",
-                "TX" => "文字",
-                "DM" => "标注",
-                "FR" => "图框",
-                "RF" => "参考底图",
-                "AN" => "辅助",
-                _ => "其它"
-            };
         }
 
         public static List<LayerConfig> GetLayersByCategory(StandardConfig config, string category)
         {
-            return config.Layers
-                .Where(l => string.Equals(l.Category, category, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(l => l.Name)
+            // Priority 1: Match by CategoryNo
+            string normalized = NormalizeCategoryNo(category);
+            var byCatNo = config.Layers
+                .Where(l => string.Equals(l.CategoryNo, normalized, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(l => l.Order > 0 ? l.Order : int.MaxValue)
+                .ThenBy(l => l.OrderIndex > 0 ? l.OrderIndex : int.MaxValue)
                 .ToList();
+            if (byCatNo.Count > 0) return byCatNo;
+
+            // Priority 2: Match by layer Category field
+            var byCategory = config.Layers
+                .Where(l => string.Equals(l.Category, normalized, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(l => GetLayerOrder(l, 0))
+                .ToList();
+            if (byCategory.Count > 0) return byCategory;
+
+            // Priority 3: Fallback - match by name prefix
+            return config.Layers
+                .Select((layer, index) => new { layer, index })
+                .Where(l => string.Equals(GetCategoryPrefix(l.layer), normalized, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(l => GetLayerOrder(l.layer, l.index))
+                .Select(l => l.layer)
+                .ToList();
+        }
+
+        private static string GetCategoryPrefix(LayerConfig layer)
+        {
+            if (!string.IsNullOrWhiteSpace(layer.CategoryNo))
+                return layer.CategoryNo;
+
+            if (!string.IsNullOrWhiteSpace(layer.Name) &&
+                layer.Name.Length >= 2 &&
+                char.IsDigit(layer.Name[0]) &&
+                char.IsDigit(layer.Name[1]))
+            {
+                return layer.Name.Substring(0, 2);
+            }
+
+            return layer.Category;
+        }
+
+        private static string NormalizeCategoryNo(string value)
+        {
+            if (int.TryParse(value, out int number) && number >= 0 && number <= 99)
+                return number.ToString("D2");
+            return value;
+        }
+
+        private static int GetLayerOrder(LayerConfig layer, int fallbackIndex)
+        {
+            if (layer.Order > 0) return layer.Order;
+            return layer.OrderIndex > 0 ? layer.OrderIndex : fallbackIndex + 1;
+        }
+
+        private static string GetCategoryDescriptionFallback(string code)
+        {
+            return code switch
+            {
+                "00" => "原始条件",
+                "01" => "建筑基础",
+                "02" => "室内完成面",
+                "03" => "地面",
+                "04" => "天花",
+                "05" => "家具陈设",
+                "06" => "展陈专项",
+                "07" => "灯光照明",
+                "08" => "强电",
+                "09" => "弱电智能",
+                "10" => "设备机电",
+                "11" => "消防",
+                "12" => "给排水",
+                "13" => "文字说明",
+                "14" => "标注符号",
+                "15" => "图框布局",
+                "16" => "参照底图",
+                "17" => "辅助检查",
+                _ => code switch
+                {
+                    "AR" => "建筑",
+                    "IN" => "室内",
+                    "FL" => "地面",
+                    "CE" => "天花",
+                    "FU" => "家具",
+                    "EX" => "展厅",
+                    "LI" => "灯具",
+                    "EL" => "强电",
+                    "WK" => "弱电",
+                    "EQ" => "设备",
+                    "FI" => "消防",
+                    "PL" => "给排水",
+                    "TX" => "文字",
+                    "DM" => "标注",
+                    "FR" => "图框",
+                    "RF" => "参考底图",
+                    "AN" => "辅助",
+                    _ => "其它"
+                }
+            };
         }
 
         public static bool LayerExists(string layerName)

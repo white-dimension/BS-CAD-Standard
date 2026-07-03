@@ -229,9 +229,18 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
                     Ctb = source.Ctb
                 };
 
-                foreach (BsCadLayerV06 layer in source.Layers)
+                // Store categories from JSON
+                config.ConfigCategories = source.Categories
+                    .Select(c => new StandardCategory
+                    {
+                        CategoryNo = c.CategoryNo,
+                        CategoryName = c.CategoryName
+                    })
+                    .ToList();
+
+                for (int i = 0; i < source.Layers.Count; i++)
                 {
-                    config.Layers.Add(MapLayerV06(layer));
+                    config.Layers.Add(MapLayerV06(source.Layers[i]));
                 }
 
                 return config;
@@ -250,6 +259,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         private static LayerConfig MapLayerV06(BsCadLayerV06 source)
         {
+            int order = source.Order > 0 ? source.Order : 0;
             return new LayerConfig
             {
                 Name = source.Name,
@@ -260,7 +270,12 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
                 Plot = ParsePlot(source.Plot),
                 Core = true,
                 Category = ResolveCategory(source),
-                Description = source.Description
+                Description = source.Description,
+                Order = order,
+                CategoryNo = source.CategoryNo,
+                CategoryName = source.CategoryName,
+                OrderIndex = order > 0 ? order : 0,
+                LayerOrderSource = "JSON order field"
             };
         }
 
@@ -303,6 +318,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         private static string ResolveCategory(BsCadLayerV06 source)
         {
+            if (!string.IsNullOrWhiteSpace(source.CategoryNo)) return source.CategoryNo;
             if (!string.IsNullOrWhiteSpace(source.CategoryCode)) return source.CategoryCode;
             if (!string.IsNullOrWhiteSpace(source.Category)) return source.Category;
 

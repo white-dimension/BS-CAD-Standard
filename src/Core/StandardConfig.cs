@@ -23,6 +23,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("styles")]
         public StylesConfig Styles { get; set; } = new();
+
+        [JsonIgnore]
+        public List<StandardCategory> ConfigCategories { get; set; } = new();
     }
 
     public class StylesConfig
@@ -62,6 +65,36 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("description")]
         public string Description { get; set; } = string.Empty;
+
+        [JsonPropertyName("order")]
+        public int Order { get; set; }
+
+        [JsonPropertyName("categoryNo")]
+        public string CategoryNo { get; set; } = string.Empty;
+
+        [JsonPropertyName("categoryName")]
+        public string CategoryName { get; set; } = string.Empty;
+
+        [JsonIgnore]
+        public int OrderIndex { get; set; }
+
+        [JsonIgnore]
+        public string LayerOrderSource { get; set; } = string.Empty;
+    }
+
+    public class BsCadCategoryV06
+    {
+        [JsonPropertyName("categoryNo")]
+        public string CategoryNo { get; set; } = string.Empty;
+
+        [JsonPropertyName("categoryName")]
+        public string CategoryName { get; set; } = string.Empty;
+
+        [JsonPropertyName("firstOrder")]
+        public int FirstOrder { get; set; }
+
+        [JsonPropertyName("layerCount")]
+        public int LayerCount { get; set; }
     }
 
     public class BsCadStandardV06
@@ -80,6 +113,12 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("layerCount")]
         public int LayerCount { get; set; }
+
+        [JsonPropertyName("categoryCount")]
+        public int CategoryCount { get; set; }
+
+        [JsonPropertyName("categories")]
+        public List<BsCadCategoryV06> Categories { get; set; } = new();
 
         [JsonPropertyName("layers")]
         public List<BsCadLayerV06> Layers { get; set; } = new();
@@ -119,5 +158,20 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("displayName")]
         public string DisplayName { get; set; } = string.Empty;
+
+        [JsonPropertyName("order")]
+        public int Order { get; set; }
+
+        [JsonPropertyName("categoryNo")]
+        public string CategoryNo { get; set; } = string.Empty;
+
+        [JsonPropertyName("categoryName")]
+        public string CategoryName { get; set; } = string.Empty;
+    }
+
+    public class StandardCategory
+    {
+        public string CategoryNo { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
     }
 }

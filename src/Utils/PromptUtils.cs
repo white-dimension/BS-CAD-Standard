@@ -69,10 +69,12 @@ namespace BS_CAD_STANDARD_V10_Plugin.Utils
             for (int i = 0; i < categories.Count; i++)
             {
                 var cat = categories[i];
-                ed.WriteMessage($"\n[{i + 1:D2}] {cat.Code} — {cat.Description} ({cat.LayerCount}层)");
+                string displayNo = !string.IsNullOrWhiteSpace(cat.CategoryNo) ? cat.CategoryNo : cat.Code;
+                string displayName = !string.IsNullOrWhiteSpace(cat.CategoryName) ? cat.CategoryName : cat.Description;
+                ed.WriteMessage($"\n[{displayNo}] {displayName} ({cat.LayerCount}层)");
             }
 
-            PromptStringOptions opt = new PromptStringOptions("\n输入编号或代码 (Q退出): ");
+            PromptStringOptions opt = new PromptStringOptions("\n输入分类编号 (Q退出): ");
             opt.AllowSpaces = false;
 
             while (true)
@@ -84,22 +86,44 @@ namespace BS_CAD_STANDARD_V10_Plugin.Utils
                 if (string.IsNullOrEmpty(input)) continue;
                 if (input == QuitCommand) return QuitCommand;
 
-                // 尝试匹配编号
-                if (int.TryParse(input, out int index) && index > 0 && index <= categories.Count)
+                string normalizedInput = NormalizeCategoryInput(input);
+                CategoryInfo? byPrefix = categories.Find(c =>
+                    string.Equals(c.CategoryNo, normalizedInput, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(c.Prefix, normalizedInput, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(c.Code, normalizedInput, StringComparison.OrdinalIgnoreCase));
+                if (byPrefix != null)
                 {
-                    return categories[index - 1].Code;
+                    return !string.IsNullOrWhiteSpace(byPrefix.CategoryNo) ? byPrefix.CategoryNo
+                        : !string.IsNullOrWhiteSpace(byPrefix.Prefix) ? byPrefix.Prefix
+                        : byPrefix.Code;
                 }
 
-                // 尝试匹配代码
                 if (categories.Exists(c => string.Equals(c.Code, input, StringComparison.OrdinalIgnoreCase)))
                 {
                     return input;
+                }
+
+                if (int.TryParse(input, out int index) && index > 0 && index <= categories.Count)
+                {
+                    CategoryInfo byOrdinal = categories[index - 1];
+                    return !string.IsNullOrWhiteSpace(byOrdinal.CategoryNo) ? byOrdinal.CategoryNo
+                        : !string.IsNullOrWhiteSpace(byOrdinal.Prefix) ? byOrdinal.Prefix
+                        : byOrdinal.Code;
                 }
 
                 ed.WriteMessage("\n无效输入，请重新输入。");
             }
         }
 
+        private static string NormalizeCategoryInput(string input)
+        {
+            if (int.TryParse(input, out int number) && number >= 0 && number <= 99)
+            {
+                return number.ToString("D2");
+            }
+
+            return input;
+        }
         public static LayerConfig? SelectLayer(List<LayerConfig> layers)
         {
             Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -108,7 +132,8 @@ namespace BS_CAD_STANDARD_V10_Plugin.Utils
             for (int i = 0; i < layers.Count; i++)
             {
                 var ly = layers[i];
-                ed.WriteMessage($"\n[{i + 1:D2}] {ly.Name}  Color={ly.Color}  LineWeight={ly.Lineweight}");
+                int displayIndex = ly.Order > 0 ? ly.Order : (ly.OrderIndex > 0 ? ly.OrderIndex : i + 1);
+                ed.WriteMessage($"\n[{displayIndex:D3}] {ly.Name}  Color={ly.Color}  LineWeight={ly.Lineweight}");
             }
 
             PromptStringOptions opt = new PromptStringOptions("\n输入编号 (X返回, Q退出): ");
@@ -124,9 +149,18 @@ namespace BS_CAD_STANDARD_V10_Plugin.Utils
                 if (input == QuitCommand) return null;
                 if (input == BackCommand) return new LayerConfig { Name = "__BACK__" };
 
-                if (int.TryParse(input, out int index) && index > 0 && index <= layers.Count)
+                if (int.TryParse(input, out int index))
                 {
-                    return layers[index - 1];
+                    LayerConfig? byGlobalOrder = layers.Find(l => l.Order == index);
+                    if (byGlobalOrder != null) return byGlobalOrder;
+
+                    byGlobalOrder = layers.Find(l => l.OrderIndex == index);
+                    if (byGlobalOrder != null) return byGlobalOrder;
+
+                    if (index > 0 && index <= layers.Count)
+                    {
+                        return layers[index - 1];
+                    }
                 }
 
                 ed.WriteMessage("\n无效输入，请重新输入。");
