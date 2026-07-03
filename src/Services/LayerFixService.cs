@@ -12,6 +12,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 {
     public class FixReport
     {
+        public bool Success { get; set; } = true;
+        public string ErrorMessage { get; set; } = string.Empty;
+
         public int FixedColorCount { get; set; }
         public int FixedLinetypeCount { get; set; }
         public int FixedTransparencyCount { get; set; }
@@ -21,7 +24,6 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
         public List<string> MissingStandardLayers { get; set; } = new();
         public List<string> NonStandardLayers { get; set; } = new();
-        public List<string> VpfDifferences { get; set; } = new();
         public List<string> Warnings { get; set; } = new();
     }
 
@@ -73,6 +75,8 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                 }
                 catch (Exception ex)
                 {
+                    report.Success = false;
+                    report.ErrorMessage = ex.Message;
                     ed.WriteMessage($"\n[Exception] BS_FIX_LAYER failed: {ex.Message}");
                 }
             }
@@ -162,27 +166,6 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                 ed.WriteMessage($"\n[Warning] Failed to fix layer [{layerRecord.Name}]: {ex.Message}");
                 report.Warnings.Add($"Fix failed for [{layerRecord.Name}]: {ex.Message}");
             }
-        }
-
-        public static void DetectVpfDifferences(StandardConfig config, FixReport report)
-        {
-            // New viewport freeze detection is not supported in the current
-            // AutoCAD managed API version. Report count based on config only.
-            int vpfConfigured = config.Layers.Count(l =>
-                !string.IsNullOrWhiteSpace(l.NewViewportFreezeRaw));
-            if (vpfConfigured > 0)
-            {
-                report.VpfDifferences.Add(
-                    $"VPF configured in JSON for {vpfConfigured} layers; API-level read not yet supported.");
-            }
-        }
-
-        private static bool ParseVpfExpected(string raw)
-        {
-            if (string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase)) return true;
-            if (string.Equals(raw, "false", StringComparison.OrdinalIgnoreCase)) return false;
-            // "onDemand" — treat as no enforced freeze for now
-            return false;
         }
 
         private static ObjectId ResolveLinetypeId(Transaction tr, string linetypeName, Editor ed)

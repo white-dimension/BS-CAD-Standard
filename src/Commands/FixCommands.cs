@@ -33,9 +33,6 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 // Run fix
                 FixReport report = LayerFixService.RunFix(config);
 
-                // VPF differences (report only)
-                LayerFixService.DetectVpfDifferences(config, report);
-
                 // Fixed
                 ed.WriteMessage($"\n\n[Fixed]");
                 ed.WriteMessage($"\nFixed color count: {report.FixedColorCount}");
@@ -64,16 +61,8 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                     ed.WriteMessage($"\n  - {name}");
                 }
 
-                // VPF differences
-                ed.WriteMessage($"\n\nNew viewport freeze differences: {report.VpfDifferences.Count}");
-                foreach (string diff in report.VpfDifferences)
-                {
-                    ed.WriteMessage($"\n  - {diff}");
-                }
-                if (report.VpfDifferences.Count > 0)
-                {
-                    ed.WriteMessage($"\nNote: newViewportFreeze is reported only, not fixed in this version.");
-                }
+                // VPF — skipped (AutoCAD 2027 managed API not supported)
+                ed.WriteMessage($"\n\nNew viewport freeze: skipped, AutoCAD 2027 managed API not supported.");
 
                 // Warnings
                 if (report.Warnings.Count > 0)
@@ -87,7 +76,15 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
 
                 // Result
                 ed.WriteMessage($"\n\n[Result]");
-                ed.WriteMessage($"\nBS_FIX_LAYER completed.\n");
+                if (report.Success)
+                {
+                    ed.WriteMessage($"\nBS_FIX_LAYER completed.\n");
+                }
+                else
+                {
+                    ed.WriteMessage($"\nBS_FIX_LAYER failed.");
+                    ed.WriteMessage($"\nError: {report.ErrorMessage}\n");
+                }
             }
             catch (System.Exception ex)
             {
