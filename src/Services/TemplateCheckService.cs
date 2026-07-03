@@ -188,10 +188,10 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
                 if (string.IsNullOrEmpty(styleSheet))
                     AddWarn(report, "当前布局未设置 CTB / STB");
-                else if (!styleSheet.Contains("BS_", StringComparison.OrdinalIgnoreCase))
-                    AddWarn(report, $"当前布局打印样式不是 BS 标准 CTB：{styleSheet}");
+                else if (!string.Equals(styleSheet, StandardPaths.CtbFileName, StringComparison.OrdinalIgnoreCase))
+                    AddWarn(report, $"当前布局打印样式不是 {StandardPaths.CtbFileName}：当前为 {styleSheet}");
                 else
-                    AddOk(report, $"当前布局打印样式：{styleSheet}");
+                    AddOk(report, $"当前布局打印样式：{StandardPaths.CtbFileName}");
             }
             catch
             {
