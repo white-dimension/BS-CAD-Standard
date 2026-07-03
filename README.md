@@ -223,13 +223,11 @@ exports/BS_CAD_STANDARD_CTB_RULES.csv
 
 ### 关于 CTB 文件内容校验
 
-`BS_TEMPLATE_CHECK` 仅检查当前布局是否引用标准 CTB 文件名 `BS_CAD_STANDARD.ctb`，**不校验 CTB 文件内部内容**。
+`BS_TEMPLATE_CHECK` 当前检查当前布局是否引用 `BS_CAD_STANDARD.ctb`，但不校验 CTB 文件内部内容。
 
-CTB 文件（`.ctb`）的实际内容以 `BS_CTB_EXPORT` 导出的 Markdown / CSV 为人工制作依据。导出表格包含 CTB 编辑器字段（EditorColor / Screening / Lineweight 等），可直接对照 AutoCAD 打印样式表编辑器逐项设置。
+CTB 文件内容以 `BS_CTB_EXPORT` 导出的 Markdown / CSV 为人工制作依据。
 
 ---
-
-
 
 ## 12. 当前标准配置
 
