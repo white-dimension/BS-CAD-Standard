@@ -6,7 +6,7 @@ AutoCAD 图纸标准化工具集，用于室内设计 / 展厅 / 工装项目的
 
 ## 1. 项目定位
 
-BS-CAD-Standard 是一个基于 AutoCAD .NET 的 CAD 标准工具包，当前 **v0.6-core** 版本重点解决 CAD 图层标准化问题。
+BS-CAD-Standard 是一个基于 AutoCAD .NET 的 CAD 标准工具包，当前 **v0.7-ctb** 版本在图层标准核心闭环基础上，新增了 CTB 打印颜色规则检查和导出能力。
 
 当前核心能力：
 
@@ -21,13 +21,21 @@ BS-CAD-Standard 是一个基于 AutoCAD .NET 的 CAD 标准工具包，当前 **
 
 ## 2. 当前版本
 
-**v0.6-core / layer workflow core**
+**v0.7-ctb / CTB rule documentation**
 
-当前已形成图层标准核心闭环：
+v0.6-core 已完成图层标准核心闭环：
 
 ```
 生成 → 检查 → 修复 → 补齐 → 模式切换 → 恢复显示
 ```
+
+v0.7-ctb 新增 CTB 规则闭环：
+
+```
+JSON ctbRules → 检查图层颜色 → 导出 Markdown / CSV → 人工制作 CTB
+```
+
+`BS_CTB_EXPORT` 不生成 `.ctb` 文件，只导出规则说明供人工制作 / 校对 AutoCAD 打印样式表。
 
 ---
 
@@ -96,6 +104,8 @@ dotnet build
 | `BS_FIX_MISSING` | 补齐缺失标准图层 |
 | `BS_LAYER_MODE` | 按加载模式切换图层显示 |
 | `BS_LAYER_ALL` | 恢复所有图层显示 |
+| `BS_CTB_CHECK` | 检查当前图纸图层颜色是否符合 CTB 规则 |
+| `BS_CTB_EXPORT` | 导出 CTB 规则说明文件 |
 
 ---
 
@@ -113,6 +123,13 @@ BS_LAYER_MODE → 选择模式
 
 恢复显示：
 BS_LAYER_ALL
+
+CTB 规则检查：
+BS_CTB_CHECK
+
+打印标准准备：
+1. BS_CTB_CHECK    检查当前图层颜色是否符合 CTB 规则
+2. BS_CTB_EXPORT   导出 Markdown / CSV，供人工制作 CTB
 ```
 
 ---
@@ -130,6 +147,8 @@ BS_LAYER_ALL
 [4] 补齐缺失图层        BS_FIX_MISSING
 [5] 图层模式切换        BS_LAYER_MODE
 [6] 恢复全部图层        BS_LAYER_ALL
+[7] 检查 CTB 颜色规则    BS_CTB_CHECK
+[8] 导出 CTB 规则说明    BS_CTB_EXPORT
 [0] 退出
 ```
 
@@ -166,7 +185,39 @@ BS_LAYER_ALL
 
 ---
 
-## 11. 当前标准配置
+## 11. CTB 规则系统
+
+### BS_CTB_CHECK
+
+- 读取 JSON 中的 `ctbRules`
+- 检查标准图层颜色是否符合标准配置
+- 检查图层颜色是否存在于 CTB 规则
+- 报告标准图层颜色偏差
+- 报告非标准图层和非 CTB 规则颜色
+- 不修改 DWG
+- 不修改图层
+- 不生成文件
+
+### BS_CTB_EXPORT
+
+- 读取 JSON 中的 `ctbRules`
+- 导出 Markdown 文件
+- 导出 CSV 文件（UTF-8 with BOM，Excel 可直接打开）
+- 输出到 `exports/`
+- 不生成 `.ctb` 文件
+- 不修改 DWG
+- 不修改 JSON
+
+输出文件：
+
+```text
+exports/BS_CAD_STANDARD_CTB_RULES.md
+exports/BS_CAD_STANDARD_CTB_RULES.csv
+```
+
+---
+
+## 12. 当前标准配置
 
 主配置文件：`config/BS_CAD_Standard_v0.6.json`
 
@@ -174,37 +225,55 @@ BS_LAYER_ALL
 
 - 121 个标准图层
 - 18 个图层分类
-- CTB 规则字段
 - loadModes 加载模式规则
+- ctbRules 打印颜色规则（已用于 BS_CTB_CHECK 和 BS_CTB_EXPORT）
 
 ---
 
-## 12. 当前版本边界
+## 13. 当前版本边界
 
 当前尚未实现：
 
+- 自动生成 `.ctb` 文件
+- 自动安装 `.ctb` 到 AutoCAD 打印样式目录
 - 自动生成 DWT 模板
-- 自动生成 CTB 文件
 - 图层差异导出
 - Ribbon / WPF 可视化面板
 - 自动清理非标准图层
 
 `BS_AUTO_CLEAN` 暂不实现，自动删除 / 合并图层风险较高。
 
+`BS_CTB_EXPORT` 只导出规则说明文件，不直接生成 AutoCAD `.ctb` 文件。
+
 ---
 
-## 13. 开发路线
+## 14. 开发路线
 
 下一阶段方向：
 
-1. `BS_CTB`：生成或辅助落地打印样式
-2. `BS_TEMPLATE`：生成标准 DWT 模板
-3. `BS_LAYER_DIFF`：输出当前图纸与标准的差异报告
+1. `BS_TEMPLATE`：生成标准 DWT 模板
+2. `BS_LAYER_DIFF`：输出当前图纸与标准的差异报告
+3. `BS_CTB_VALIDATE_FILE`：后续如可行，校验实际 CTB 文件是否与 JSON 规则一致
 4. Ribbon / 面板：后期产品化入口
 
 ---
 
-## 14. 版本记录
+## 15. 版本记录
+
+### v0.7-ctb
+
+新增：
+
+- `BS_CTB_CHECK`：检查图层颜色与 CTB 规则一致性
+- `BS_CTB_EXPORT`：导出 CTB 规则说明文件
+- BS 菜单加入 CTB 检查 / 导出入口
+- BS_HELP 加入 CTB 命令说明
+
+状态：
+
+- 图层标准核心闭环保持稳定
+- CTB 规则已支持检查和文档导出
+- 编译通过：0 errors
 
 ### v0.6-core
 
