@@ -216,6 +216,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             w.WriteLine();
             w.WriteLine("> This file is exported from `config/BS_CAD_Standard_v0.6.json`.");
             w.WriteLine("> It is a documentation/export file only. It does not generate an AutoCAD `.ctb` file.");
+            w.WriteLine("> 本文件由 JSON ctbRules 生成，实际 CTB 修改后请同步更新 JSON。");
             w.WriteLine("> Format: CTB editor fields");
             w.WriteLine();
 
