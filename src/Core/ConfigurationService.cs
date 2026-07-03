@@ -238,6 +238,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
                     })
                     .ToList();
 
+                // Store load modes from JSON
+                config.LoadModes = source.LoadModes;
+
                 for (int i = 0; i < source.Layers.Count; i++)
                 {
                     config.Layers.Add(MapLayerV06(source.Layers[i]));

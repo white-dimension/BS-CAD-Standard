@@ -24,6 +24,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         [JsonPropertyName("styles")]
         public StylesConfig Styles { get; set; } = new();
 
+        [JsonPropertyName("loadModes")]
+        public List<LoadModeConfig> LoadModes { get; set; } = new();
+
         [JsonIgnore]
         public List<StandardCategory> ConfigCategories { get; set; } = new();
     }
@@ -128,6 +131,9 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         [JsonPropertyName("layers")]
         public List<BsCadLayerV06> Layers { get; set; } = new();
+
+        [JsonPropertyName("loadModes")]
+        public List<LoadModeConfig> LoadModes { get; set; } = new();
     }
 
     public class BsCadLayerV06
@@ -185,5 +191,29 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
     {
         public string CategoryNo { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
+    }
+
+    public class LoadModeConfig
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("usage")]
+        public string Usage { get; set; } = string.Empty;
+
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = string.Empty;
+
+        [JsonPropertyName("futureDetail")]
+        public string FutureDetail { get; set; } = string.Empty;
+
+        [JsonPropertyName("note")]
+        public string Note { get; set; } = string.Empty;
+
+        [JsonPropertyName("layers")]
+        public List<string> Layers { get; set; } = new();
     }
 }
