@@ -1,64 +1,222 @@
-# BS CAD Standard V10 Plugin
+# BS-CAD-Standard
 
-## 当前版本
+AutoCAD 图纸标准化工具集，用于室内设计 / 展厅 / 工装项目的 CAD 图层标准管理。
 
-**v0.8 Portable Test Package**
+---
 
-当前版本已完成全部 6 个命令行命令实现，并验证可移植测试包可在其他电脑运行。
+## 1. 项目定位
 
-## 目标环境
+BS-CAD-Standard 是一个基于 AutoCAD .NET 的 CAD 标准工具包，当前 **v0.6-core** 版本重点解决 CAD 图层标准化问题。
 
+当前核心能力：
+
+- 生成标准图层
+- 检查图层是否符合标准
+- 修复图层属性偏差
+- 补齐缺失标准图层
+- 按工作模式切换图层显示
+- 提供统一命令入口
+
+---
+
+## 2. 当前版本
+
+**v0.6-core / layer workflow core**
+
+当前已形成图层标准核心闭环：
+
+```
+生成 → 检查 → 修复 → 补齐 → 模式切换 → 恢复显示
+```
+
+---
+
+## 3. 项目结构
+
+```
+src/        AutoCAD .NET 插件源码
+config/     CAD 标准 JSON 配置
+docs/       项目文档
+scripts/    辅助脚本
+standard/   标准文件
+max-tools/  3ds Max 辅助工具
+```
+
+---
+
+## 4. 环境要求
+
+- Windows
 - AutoCAD 2027
-- .NET 10.0
-- C# Class Library DLL
-- 通过 AutoCAD `NETLOAD` 加载
-- 不兼容 AutoCAD 2024 及更早版本
+- .NET 10 SDK
+- Visual Studio / Rider / VS Code 任一
 
-## 已完成并测试通过
+AutoCAD .NET API 引用：
 
-- `BS_CHECK`：标准检查（图层/文字样式/标注样式/引线样式/单位/CTB）
-- `BS_LAYER`：图层切换与按 JSON 创建图层
-- `BS_TEXT`：标准文字创建，BS_TEXT_EN=Arial，其他 BS_TEXT_*=SimHei/黑体
-- `BS_DIM`：标准标注样式，读取 BS_DimStyle_Standard_V10.json
-- `BS_MLEADER`：标准多重引线，使用 BS_MLEADER_NOTE 和 BS_ARROW_DOT
-- `BS_INIT`：初始化当前图纸标准环境
-- 可移植测试包（`scripts/build-test-package.ps1` 一键打包）
-- 插件从测试包 `plugin/` 目录加载时，优先读取测试包 `config/` 目录
-- 已验证 E 盘测试包路径可以正常读取 JSON
+- `AcMgd.dll`
+- `AcDbMgd.dll`
+- `AcCoreMgd.dll`
 
-## 已修复问题
+`.csproj` 中引用路径为 `C:\Program Files\Autodesk\AutoCAD 2027\`。如果本机 AutoCAD 安装路径不同，需修改 `src/BS_CAD_STANDARD_V10_Plugin.csproj` 中的 HintPath。
 
-- BS_LAYER 的 PromptKeywordOptions 中文关键字异常
-- CreateLayerFromConfig 的 eNoDatabase
-- BS_MLEADER_NOTE 箭头无法设为小点，改为稳定自定义箭头块 BS_ARROW_DOT
-- BS_TEXT_EN 被错误改为黑体，已修复为 Arial
-- BS_CHECK 增加文字样式字体偏差检查
-- 配置路径搜索优先级：DLL 相对路径优先于硬编码开发路径
+---
 
-## 当前配置
+## 5. 编译方式
 
-- 插件项目路径：`D:\01_DesignProjects\BS_CAD_STANDARD_V10_Plugin`
-- 标准包路径：`D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package`
-- 测试包路径：`D:\01_DesignProjects\BS_CAD_STANDARD_V10_TestPackage`
-- 主标准配置：`BS_CAD_Standard_V10.json`
-- 标注样式配置：`BS_DimStyle_Standard_V10.json`
+```bash
+dotnet build
+```
 
-## 下一阶段
+预期输出：
 
-- 小范围真实项目图纸测试
-- 记录实际反馈
-- 修复稳定性问题
-- Ribbon 面板暂缓
+```text
+0 errors
+```
 
-## 暂缓
+---
 
-- Ribbon
-- 图框
-- 标题栏
-- Keynote
-- 材料编号
-- 批量打印
+## 6. AutoCAD 加载方式
 
-## 状态说明
+1. 打开 AutoCAD
+2. 输入 `NETLOAD`
+3. 选择编译后的 DLL（通常位于 `src/bin/Debug/net10.0/` 或 `src/bin/Release/net10.0/`）
+4. 输入 `BS`，进入 BS Toolkit 菜单
 
-`v0.8 Portable Test Package` 以跨机可移植的命令行插件为目标。当前不新增 Ribbon，不修改 DWT、CTB、DWG 文件。
+---
+
+## 7. 命令列表
+
+| 命令 | 功能 |
+| --- | --- |
+| `BS` | 打开统一菜单入口 |
+| `BS_HELP` | 显示命令说明 |
+| `BS_LAYER` | 生成标准图层 |
+| `BS_CHECK` | 检查当前图纸图层标准 |
+| `BS_FIX_LAYER` | 修复已有标准图层属性 |
+| `BS_FIX_MISSING` | 补齐缺失标准图层 |
+| `BS_LAYER_MODE` | 按加载模式切换图层显示 |
+| `BS_LAYER_ALL` | 恢复所有图层显示 |
+
+---
+
+## 8. 推荐使用流程
+
+```
+新项目：
+BS → 1 → BS_LAYER
+
+接手旧图：
+BS_CHECK → BS_FIX_LAYER → BS_FIX_MISSING
+
+日常绘图：
+BS_LAYER_MODE → 选择模式
+
+恢复显示：
+BS_LAYER_ALL
+```
+
+---
+
+## 9. BS 统一菜单
+
+执行 `BS` 后显示：
+
+```
+===== BS Toolkit =====
+
+[1] 生成标准图层        BS_LAYER
+[2] 检查图层标准        BS_CHECK
+[3] 修复图层属性        BS_FIX_LAYER
+[4] 补齐缺失图层        BS_FIX_MISSING
+[5] 图层模式切换        BS_LAYER_MODE
+[6] 恢复全部图层        BS_LAYER_ALL
+[0] 退出
+```
+
+---
+
+## 10. 图层模式系统
+
+`BS_LAYER_MODE` 读取 `config/BS_CAD_Standard_v0.6.json` 中的 `loadModes`，不是硬编码模式。
+
+当前支持约 12 种工作模式（以 JSON 配置为准）：
+
+- 原始条件模式
+- 平面布置模式
+- 墙体拆改模式
+- 地面铺装模式
+- 天花布置模式
+- 灯具定位模式
+- 灯具连线开关模式
+- 插座电源模式
+- 给排水模式
+- 空调设备模式
+- 弱电智能模式
+- 立面剖面节点模式
+
+模式切换行为：
+
+- 只显示当前模式需要的图层
+- 其他图层关闭
+- 0 和 Defpoints 永远保持显示
+- 不删除图层
+- 不创建图层
+- 不修改颜色 / 线型 / 透明度 / 打印 / 锁定
+- 只修改图层 `IsOff` 状态
+
+---
+
+## 11. 当前标准配置
+
+主配置文件：`config/BS_CAD_Standard_v0.6.json`
+
+当前标准包括：
+
+- 121 个标准图层
+- 18 个图层分类
+- CTB 规则字段
+- loadModes 加载模式规则
+
+---
+
+## 12. 当前版本边界
+
+当前尚未实现：
+
+- 自动生成 DWT 模板
+- 自动生成 CTB 文件
+- 图层差异导出
+- Ribbon / WPF 可视化面板
+- 自动清理非标准图层
+
+`BS_AUTO_CLEAN` 暂不实现，自动删除 / 合并图层风险较高。
+
+---
+
+## 13. 开发路线
+
+下一阶段方向：
+
+1. `BS_CTB`：生成或辅助落地打印样式
+2. `BS_TEMPLATE`：生成标准 DWT 模板
+3. `BS_LAYER_DIFF`：输出当前图纸与标准的差异报告
+4. Ribbon / 面板：后期产品化入口
+
+---
+
+## 14. 版本记录
+
+### v0.6-core
+
+已完成：
+
+- `BS_LAYER`
+- `BS_CHECK`
+- `BS_FIX_LAYER`
+- `BS_FIX_MISSING`
+- `BS_LAYER_MODE`
+- `BS_LAYER_ALL`
+- `BS`
+- `BS_HELP`
+
+状态：图层标准核心闭环完成，编译通过 0 errors。
