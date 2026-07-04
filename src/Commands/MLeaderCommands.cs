@@ -6,7 +6,7 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services;
+using BS_CAD_STANDARD_V10_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
 using BS_CAD_STANDARD_V10_Plugin.Utils;
 
 namespace BS_CAD_STANDARD_V10_Plugin.Commands

@@ -22,4 +22,10 @@
     </Reference>
   </ItemGroup>
 
+  <!-- Phase 2/3: new layered architecture (included but not moved yet) -->
+  <ItemGroup>
+    <Compile Include="..\engine\**\*.cs" />
+    <Compile Include="..\cad\**\*.cs" />
+  </ItemGroup>
+
 </Project>

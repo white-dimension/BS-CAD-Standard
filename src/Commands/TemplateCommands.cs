@@ -2,7 +2,8 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services;
+using BS_CAD_STANDARD_V10_Plugin.Cad.Services;
+using BS_CAD_STANDARD_V10_Plugin.Engine.Template;
 using BS_CAD_STANDARD_V10_Plugin.Utils;
 
 namespace BS_CAD_STANDARD_V10_Plugin.Commands
@@ -26,7 +27,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 ed.WriteMessage("\nVersion: v0.8-template");
                 ed.WriteMessage("\n========================================");
 
-                TemplateCheckReport report = TemplateCheckService.RunCheck(config);
+                TemplateCheckReport report = TemplateBridge.RunCheck(config);
 
                 if (!report.Success)
                 {

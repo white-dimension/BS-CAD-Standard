@@ -160,7 +160,7 @@ CTB / 打印样式检查
 主配置文件：
 
 ```text
-config/BS_CAD_Standard_v0.6.json
+standard/config/BS_CAD_Standard_V10.json
 ```
 
 当前标准内容：

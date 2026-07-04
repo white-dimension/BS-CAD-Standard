@@ -37,9 +37,6 @@ Copy-Item -Path (Join-Path $PackageRoot "config\BS_CAD_Standard_V10.json") `
           -Destination (Join-Path $TestPkgRoot "config\BS_CAD_Standard_V10.json") -Force
 Write-Host "  [OK] config\BS_CAD_Standard_V10.json"
 
-Copy-Item -Path (Join-Path $PackageRoot "config\BS_CAD_Standard_v0.6.json") `
-          -Destination (Join-Path $TestPkgRoot "config\BS_CAD_Standard_v0.6.json") -Force
-Write-Host "  [OK] config\BS_CAD_Standard_v0.6.json"
 
 Copy-Item -Path (Join-Path $PackageRoot "config\BS_DimStyle_Standard_V10.json") `
           -Destination (Join-Path $TestPkgRoot "config\BS_DimStyle_Standard_V10.json") -Force

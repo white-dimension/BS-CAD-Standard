@@ -4,7 +4,8 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services;
+using BS_CAD_STANDARD_V10_Plugin.Cad.Services;
+using BS_CAD_STANDARD_V10_Plugin.Engine.Ctb;
 using BS_CAD_STANDARD_V10_Plugin.Utils;
 
 namespace BS_CAD_STANDARD_V10_Plugin.Commands
@@ -34,7 +35,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 ed.WriteMessage($"\nCTB rule colors: {config.CtbRules?.Count ?? 0}");
 
                 // Run check
-                CtbCheckReport report = CtbCheckService.RunCheck(config);
+                CtbCheckReport report = CtbBridge.RunCheck(config);
 
                 // Summary
                 ed.WriteMessage($"\n\n[Summary]");
@@ -147,7 +148,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 ed.WriteMessage($"\nCTB name: {config.Ctb}");
 
                 // Export
-                CtbExportReport report = CtbExportService.ExportRules(config);
+                CtbExportReport report = CtbBridge.Export(config);
 
                 if (report.Success)
                 {

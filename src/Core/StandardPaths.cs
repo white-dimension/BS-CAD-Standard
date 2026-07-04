@@ -1,26 +1,44 @@
+using System;
+using System.IO;
+
 namespace BS_CAD_STANDARD_V10_Plugin.Core
 {
     public static class StandardPaths
     {
-        // 标准包根目录
-        public const string PackageRoot = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package";
+        /// <summary>
+        /// 解析标准包根目录。
+        /// 优先级: BS_ROOT 环境变量 → BS_CAD_STANDARD_ROOT 环境变量 → AppDomain.BaseDirectory/standard
+        /// </summary>
+        public static string ResolveRoot()
+        {
+            string? envRoot = Environment.GetEnvironmentVariable("BS_ROOT")
+                           ?? Environment.GetEnvironmentVariable("BS_CAD_STANDARD_ROOT");
+            if (!string.IsNullOrEmpty(envRoot))
+                return envRoot;
 
-        // 主 JSON 路径 (标准包)
-        public const string MainConfigPath = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package\config\BS_CAD_Standard_V10.json";
+            // 回退到可执行文件目录下的 standard/
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string fallback = Path.GetFullPath(Path.Combine(baseDir, "standard"));
+            return fallback;
+        }
 
-        // 备用 JSON 路径 (项目内置)
-        public const string BackupConfigPath = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Plugin\config\BS_CAD_Standard_V10.json";
+        public static string ConfigDir => Path.Combine(ResolveRoot(), "config");
+        public static string TemplatesDir => Path.Combine(ResolveRoot(), "templates");
+        public static string PlotStylesDir => Path.Combine(ResolveRoot(), "plot_styles");
 
-        // 标注样式主 JSON 路径
-        public const string DimConfigPath = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package\config\BS_DimStyle_Standard_V10.json";
+        // — JSON 配置路径 —
+        public static string MainConfigPath => Path.Combine(ConfigDir, "BS_CAD_Standard_V10.json");
+        public static string BackupConfigPath => Path.Combine(ConfigDir, "BS_CAD_Standard_V10.json");
 
-        // 标注样式备用 JSON 路径
-        public const string BackupDimConfigPath = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Plugin\config\BS_DimStyle_Standard_V10.json";
+        public static string DimConfigPath => Path.Combine(ConfigDir, "BS_DimStyle_Standard_V10.json");
+        public static string BackupDimConfigPath => Path.Combine(ConfigDir, "BS_DimStyle_Standard_V10.json");
 
-        // CTB 文件名
-        public const string CtbFileName = "BS_CAD_STANDARD.ctb";
+        public static string MigrationRulesConfigPath => Path.Combine(ConfigDir, "BS_Layer_Migration_Rules_V10.json");
 
-        // DWT 路径
-        public const string DwtPath = @"D:\01_DesignProjects\BS_CAD_STANDARD_V10_Package\templates\BS_CAD_STANDARD_V10.dwt";
+        // — CTB —
+        public const string CtbFileName = "BS_CAD_STANDARD_V10.ctb";
+
+        // — DWT —
+        public static string DwtPath => Path.Combine(TemplatesDir, "BS_CAD_STANDARD_V10.dwt");
     }
 }

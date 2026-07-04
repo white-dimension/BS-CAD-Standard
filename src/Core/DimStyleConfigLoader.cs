@@ -19,9 +19,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
                 return ConfigurationService.CurrentDimStyleConfigPath;
             }
 
-            return File.Exists(StandardPaths.DimConfigPath)
-                ? StandardPaths.DimConfigPath
-                : StandardPaths.BackupDimConfigPath;
+            return StandardPaths.DimConfigPath;
         }
     }
 }

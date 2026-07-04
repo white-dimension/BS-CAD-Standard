@@ -3,7 +3,8 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services;
+using BS_CAD_STANDARD_V10_Plugin.Cad.Services;
+using BS_CAD_STANDARD_V10_Plugin.Engine.Layer;
 using BS_CAD_STANDARD_V10_Plugin.Utils;
 using System.Collections.Generic;
 
@@ -23,7 +24,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
 
                 StandardConfig config = context.StandardConfig;
                 PrintLayerOrderDebug(ed, context, config);
-                List<CategoryInfo> categories = LayerService.GetCategories(config);
+                List<CategoryInfo> categories = LayerBridge.GetCategories(config);
                 bool keepRunning = true;
 
                 while (keepRunning)
@@ -33,7 +34,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                     if (catCode == "Q") break;
 
                     // 2. 选择图层
-                    List<LayerConfig> layers = LayerService.GetLayersByCategory(config, catCode);
+                    List<LayerConfig> layers = LayerBridge.GetLayersByCategory(config, catCode);
                     bool backToCategories = false;
 
                     while (!backToCategories)
@@ -101,11 +102,11 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
         {
             Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
 
-            ObjectId layerId = LayerService.GetLayerId(cfg.Name);
+            ObjectId layerId = LayerBridge.GetLayerId(cfg.Name);
 
             if (layerId != ObjectId.Null)
             {
-                if (LayerService.SwitchToLayer(layerId))
+                if (LayerBridge.SwitchToLayer(layerId))
                 {
                     ed.WriteMessage($"\n已切换到图层: {cfg.Name}");
                 }
@@ -116,10 +117,10 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
 
                 if (confirm == PromptResultType.Yes)
                 {
-                    ObjectId newLayerId = LayerService.CreateLayerFromConfig(cfg);
+                    ObjectId newLayerId = LayerBridge.CreateLayerFromConfig(cfg);
                     if (newLayerId != ObjectId.Null)
                     {
-                        if (LayerService.SwitchToLayer(newLayerId))
+                        if (LayerBridge.SwitchToLayer(newLayerId))
                         {
                             ed.WriteMessage($"\n图层 [{cfg.Name}] 已创建并切换。");
                         }

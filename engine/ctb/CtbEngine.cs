@@ -3,47 +3,111 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using BS_CAD_STANDARD_V10_Plugin.Core;
+using BS_CAD_STANDARD_V10_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Services
+namespace BS_CAD_STANDARD_V10_Plugin.Engine.Ctb
 {
-    public class CtbExportReport
+    /// <summary>
+    /// CTB 引擎 — CTB 校验和导出逻辑的唯一来源。
+    /// </summary>
+    public class CtbEngine
     {
-        public bool Success { get; set; } = true;
-        public string ErrorMessage { get; set; } = string.Empty;
+        // ===== CTB 校验 =====
 
-        public string CtbName { get; set; } = string.Empty;
-        public int RuleCount { get; set; }
+        public CtbCheckReport Check(StandardConfig config)
+        {
+            CtbCheckReport report = new()
+            {
+                CtbName = config.Ctb,
+                StandardLayerCount = config.Layers.Count,
+                CtbRuleColorCount = config.CtbRules?.Count ?? 0
+            };
 
-        public string ExportDirectory { get; set; } = string.Empty;
-        public string MarkdownPath { get; set; } = string.Empty;
-        public string CsvPath { get; set; } = string.Empty;
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
 
-        public List<string> Warnings { get; set; } = new();
-    }
+            HashSet<string> standardLayerNames = new(config.Layers.Select(l => l.Name), StringComparer.OrdinalIgnoreCase);
+            HashSet<int> ctbColors = new((config.CtbRules ?? new List<CtbRuleConfig>()).Select(r => r.Color));
 
-    public class CtbEditorRow
-    {
-        public int Color { get; set; }
-        public string EditorColor { get; set; } = "Use object color";
-        public string Dither { get; set; } = "On";
-        public string Grayscale { get; set; } = "Off";
-        public string PenNumber { get; set; } = "Automatic";
-        public string VirtualPen { get; set; } = "Automatic";
-        public int Screening { get; set; } = 100;
-        public string Linetype { get; set; } = "Use object linetype";
-        public string Adaptive { get; set; } = "On";
-        public string Lineweight { get; set; } = "0.18mm";
-        public string EndStyle { get; set; } = "Use object end style";
-        public string JoinStyle { get; set; } = "Use object join style";
-        public string FillStyle { get; set; } = "Use object fill style";
-        public string Objects { get; set; } = string.Empty;
-        public string Note { get; set; } = string.Empty;
-    }
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                try
+                {
+                    LayerTable layerTable = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
 
-    public static class CtbExportService
-    {
-        public static CtbExportReport ExportRules(StandardConfig config)
+                    foreach (LayerConfig layerConfig in config.Layers)
+                    {
+                        if (!layerTable.Has(layerConfig.Name))
+                        {
+                            report.MissingStandardLayers.Add(layerConfig.Name);
+                            continue;
+                        }
+
+                        LayerTableRecord layerRecord = (LayerTableRecord)tr.GetObject(
+                            layerTable[layerConfig.Name], OpenMode.ForRead);
+                        short colorIndex = layerRecord.Color.ColorIndex;
+
+                        if (colorIndex != layerConfig.Color)
+                        {
+                            report.ColorMismatches.Add(
+                                $"{layerConfig.Name}: current={colorIndex}, expected={layerConfig.Color}");
+                        }
+
+                        if (!ctbColors.Contains(colorIndex))
+                        {
+                            report.InvalidCtbColors.Add(
+                                $"{layerConfig.Name}: color={colorIndex} not defined in ctbRules");
+                        }
+                    }
+
+                    foreach (ObjectId id in layerTable)
+                    {
+                        LayerTableRecord layerRecord = (LayerTableRecord)tr.GetObject(id, OpenMode.ForRead);
+                        string name = layerRecord.Name;
+
+                        if (LayerPropertyUtils.IsExcludedLayer(name)) continue;
+                        if (name.Contains("|")) continue;
+
+                        if (standardLayerNames.Contains(name)) continue;
+
+                        report.NonStandardLayers.Add(name);
+                        short colorIndex = layerRecord.Color.ColorIndex;
+                        if (!ctbColors.Contains(colorIndex))
+                        {
+                            report.NonStandardLayerInvalidColors.Add(
+                                $"{name}: color={colorIndex} not defined in ctbRules");
+                        }
+                    }
+
+                    report.ExistingStandardLayerCount = config.Layers.Count - report.MissingStandardLayers.Count;
+                    report.MissingStandardLayerCount = report.MissingStandardLayers.Count;
+                    report.ColorMismatchCount = report.ColorMismatches.Count;
+                    report.InvalidLayerColorCount = report.InvalidCtbColors.Count;
+                    report.ValidLayerColorCount = report.ExistingStandardLayerCount - report.InvalidLayerColorCount;
+                    report.NonStandardLayerCount = report.NonStandardLayers.Count;
+                    report.NonStandardLayerInvalidColorCount = report.NonStandardLayerInvalidColors.Count;
+
+                    tr.Commit();
+                }
+                catch (Exception ex)
+                {
+                    report.Success = false;
+                    report.ErrorMessage = ex.Message;
+                    ed.WriteMessage($"\n[Exception] CTB check failed: {ex.Message}");
+                }
+            }
+
+            return report;
+        }
+
+        // ===== CTB 导出 =====
+
+        public CtbExportReport Export(StandardConfig config)
         {
             CtbExportReport report = new()
             {
@@ -81,6 +145,8 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             return report;
         }
 
+        // ===== 导出帮助方法 =====
+
         private static CtbEditorRow BuildEditorRow(CtbRuleConfig rule)
         {
             CtbEditorRow row = new()
@@ -90,7 +156,6 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                 Note = rule.Note
             };
 
-            // Priority: JSON field > fallback by color
             if (!string.IsNullOrWhiteSpace(rule.EditorColor))
                 row.EditorColor = rule.EditorColor;
             if (!string.IsNullOrWhiteSpace(rule.Dither))
@@ -114,7 +179,6 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             if (!string.IsNullOrWhiteSpace(rule.FillStyle))
                 row.FillStyle = rule.FillStyle;
 
-            // Fallback by plotLineweight
             if (!string.IsNullOrWhiteSpace(rule.PlotLineweight))
             {
                 string lw = rule.PlotLineweight.Trim();
@@ -122,7 +186,6 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                     row.Lineweight = lw;
             }
 
-            // Fallback by color number
             ApplyColorFallback(rule.Color, rule.PlotColor, row);
 
             return row;
@@ -133,35 +196,30 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             switch (color)
             {
                 case 7:
-                    // 主体亮灰 → 打印黑
                     row.EditorColor = "Black";
                     row.Screening = 100;
                     SetLineweight(row, "0.25mm");
                     break;
 
                 case 8:
-                    // 弱化灰 → 打印浅灰
                     row.EditorColor = "Black";
                     row.Screening = 45;
                     SetLineweight(row, "0.13mm");
                     break;
 
                 case 9:
-                    // 参照灰 → 打印淡灰
                     row.EditorColor = "Black";
                     row.Screening = 30;
                     SetLineweight(row, "0.09mm");
                     break;
 
                 case 250:
-                    // 淡灰 → 打印极淡
                     row.EditorColor = "Black";
                     row.Screening = 25;
                     SetLineweight(row, "0.09mm");
                     break;
 
                 case 30:
-                    // 橙色系 — 保留颜色
                     row.EditorColor = "Use object color";
                     row.Screening = 100;
                     SetLineweight(row, "0.18mm");
@@ -171,14 +229,12 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                 case 140:
                 case 160:
                 case 180:
-                    // 保留色类
                     row.EditorColor = "Use object color";
                     row.Screening = 100;
                     SetLineweight(row, "0.18mm");
                     break;
 
                 default:
-                    // 其他 — 检查 plotColor 是否含灰阶暗示
                     if (!string.IsNullOrWhiteSpace(plotColor))
                     {
                         if (plotColor.Contains("黑") || plotColor.Contains("深灰"))
@@ -198,7 +254,6 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
         private static void SetLineweight(CtbEditorRow row, string lw)
         {
-            // Only set if no explicit plotLineweight was already applied
             if (row.Lineweight == "0.18mm" || string.IsNullOrWhiteSpace(row.Lineweight))
                 row.Lineweight = lw;
         }

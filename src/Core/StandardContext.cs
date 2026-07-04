@@ -22,7 +22,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
             DimStyleConfig = dimStyleConfig;
             StandardConfigPath = standardConfigPath;
             DimStyleConfigPath = dimStyleConfigPath;
-            PackageRoot = StandardPaths.PackageRoot;
+            PackageRoot = StandardPaths.ResolveRoot();
         }
 
         public Document Document { get; }

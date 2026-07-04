@@ -19,9 +19,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
                 return ConfigurationService.CurrentStandardConfigPath;
             }
 
-            return File.Exists(StandardPaths.MainConfigPath)
-                ? StandardPaths.MainConfigPath
-                : StandardPaths.BackupConfigPath;
+            return StandardPaths.MainConfigPath;
         }
     }
 }

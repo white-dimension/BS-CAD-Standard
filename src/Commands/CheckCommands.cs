@@ -5,7 +5,8 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services;
+using BS_CAD_STANDARD_V10_Plugin.Cad.Services;
+using BS_CAD_STANDARD_V10_Plugin.Engine.Core;
 using BS_CAD_STANDARD_V10_Plugin.Utils;
 
 namespace BS_CAD_STANDARD_V10_Plugin.Commands
@@ -22,7 +23,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 StandardContext? context = ConfigurationService.CreateContext(ed);
                 if (context == null) return;
 
-                CheckResult result = CheckEngine.RunFullCheck(context.StandardConfig);
+                CheckResult result = CheckBridge.Run(context.StandardConfig);
                 PrintReport(ed, context, result);
             }
             catch (System.Exception ex)
