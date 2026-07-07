@@ -1,5 +1,5 @@
-﻿; BS CAD Standard V10 - Text style creation script
-; Command: BS_CREATE_TEXT_STYLES_V10
+﻿; BS CAD Standard 1.0 - Text style creation script
+; Command: BS_CREATE_TEXT_STYLES_1_0
 ; Encoding: UTF-8 with BOM
 
 (vl-load-com)
@@ -38,17 +38,18 @@
   )
 )
 
-(defun c:BS_CREATE_TEXT_STYLES_V10 (/)
-  (princ "\nBS CAD Standard V10: creating/updating text styles...")
+(defun c:BS_CREATE_TEXT_STYLES_1_0 (/)
+  (princ "\nBS CAD Standard 1.0: creating/updating text styles...")
   (bs:create-or-update-text-style "BS_TEXT_CN" "SimHei" 0.0 1.0 0.0 "Chinese notes")
   (bs:create-or-update-text-style "BS_TEXT_EN" "Arial" 0.0 1.0 0.0 "English, numbers, codes")
   (bs:create-or-update-text-style "BS_TEXT_TITLE" "SimHei" 0.0 1.0 0.0 "Drawing titles, area names")
   (bs:create-or-update-text-style "BS_TEXT_TABLE" "SimHei" 0.0 0.9 0.0 "Tables, title blocks, schedules")
   (bs:create-or-update-text-style "BS_TEXT_NOTE" "SimHei" 0.0 0.85 0.0 "Small notes")
   (setvar "TEXTSTYLE" "BS_TEXT_CN")
-  (princ "\nBS CAD Standard V10: text styles created/updated successfully.")
+  (princ "\nBS CAD Standard 1.0: text styles created/updated successfully.")
   (princ)
 )
 
-(princ "\nCommand loaded: BS_CREATE_TEXT_STYLES_V10")
+(princ "\nCommand loaded: BS_CREATE_TEXT_STYLES_1_0")
 (princ)
+

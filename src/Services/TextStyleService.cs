@@ -1,11 +1,11 @@
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.GraphicsInterface;
-using BS_CAD_STANDARD_V10_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
 using System;
 using System.Collections.Generic;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Services
 {
     public class TextStyleService
     {

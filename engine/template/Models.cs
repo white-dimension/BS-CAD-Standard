@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Template
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Template
 {
     public class TemplateCheckReport
     {

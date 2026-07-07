@@ -5,10 +5,10 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Services
 {
     public class CategoryInfo
     {

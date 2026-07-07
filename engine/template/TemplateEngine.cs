@@ -4,10 +4,10 @@ using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Template
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Template
 {
     /// <summary>
     /// 模板检查引擎 — Template 检查逻辑的唯一来源。

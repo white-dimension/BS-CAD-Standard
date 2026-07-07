@@ -1,7 +1,7 @@
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Engine.Template;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Engine.Template;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Cad.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Cad.Services
 {
     /// <summary>
     /// 模板桥接层 — cad → engine 的唯一切入点。

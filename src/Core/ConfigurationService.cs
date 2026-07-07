@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Core
+namespace BS_CAD_STANDARD_1_0_Plugin.Core
 {
     public static class ConfigurationService
     {
-        private const string V10StandardConfigFile = "BS_CAD_Standard_V10.json";
-        private const string DimStyleConfigFile = "BS_DimStyle_Standard_V10.json";
-        private const string MigrationRulesConfigFile = "BS_Layer_Migration_Rules_V10.json";
+        private const string StandardConfigFile = "BS_CAD_Standard_1.0.json";
+        private const string DimStyleConfigFile = "BS_DimStyle_Standard_1.0.json";
+        private const string MigrationRulesConfigFile = "BS_Layer_Migration_Rules_1.0.json";
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -24,11 +24,11 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
 
         public static StandardConfig? LoadStandardConfig(Editor ed)
         {
-            string? path = ResolveConfigFile(ed, "CAD standard config V10", V10StandardConfigFile);
+            string? path = ResolveConfigFile(ed, "CAD standard config 1.0", StandardConfigFile);
             CurrentStandardConfigPath = path ?? string.Empty;
             if (path == null) return null;
 
-            StandardConfig? config = LoadJson<StandardConfig>(ed, path, "CAD standard config V10");
+            StandardConfig? config = LoadJson<StandardConfig>(ed, path, "CAD standard config 1.0");
             if (config != null)
             {
                 ed.WriteMessage($"\nLoaded CAD standard config:\n{Path.GetFileName(path)}");

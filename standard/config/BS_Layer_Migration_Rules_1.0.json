@@ -1,0 +1,302 @@
+﻿{
+  "version": "1.0",
+  "standardName": "BS CAD Standard",
+  "packageName": "BS_CAD_STANDARD_1.0",
+  "description": "鏃у浘绾搁潪鏍囧噯鍥惧眰 鈫?BS 鏍囧噯鍥惧眰杩佺Щ瑙勫垯銆傛寜浼樺厛绾т粠楂樺埌浣庢帓鍒楋細鏇村叿浣撶殑澶氳瘝缁勫悎鎺掑墠闈紝娉涜鍒欐帓鏈€鍚庛€傛瘡鏉¤鍒欐寜椤哄簭鍖归厤锛岄娆″懡涓嵆杩斿洖銆?,
+  "rules": [
+    {
+      "id": "wall-demo",
+      "rule": "鍖呭惈 澧欎綋鎷嗛櫎 / 鎷嗛櫎澧欎綋 / 鎷嗗 / DEMO / 鎷嗛櫎",
+      "keywords": ["澧欎綋鎷嗛櫎", "鎷嗛櫎澧欎綋", "鎷嗗", "DEMO", "鎷嗛櫎"],
+      "targetLayer": "01-AR-鎷嗛櫎澧欎綋",
+      "note": "鎷嗛櫎绫诲浘灞備紭鍏堜簬鏂板缓鍜屾櫘閫氬浣?
+    },
+    {
+      "id": "wall-new",
+      "rule": "鍖呭惈 鏂板缓妤兼+妤兼澘 / 鏂板缓澧?/ 鏂板 / 鏂板缓 / 杞婚挗榫欓 / NEW-WALL / NEWWALL",
+      "keywords": ["鏂板缓妤兼", "鏂板缓澧?, "鏂板缓妤兼澘", "鏂板", "杞婚挗榫欓", "NEW-WALL", "NEWWALL", "鏂板缓"],
+      "targetLayer": "01-AR-鏂板缓澧欎綋",
+      "note": "鏂板缓鏋勯€犱紭鍏堜簬鍘熸湁鍜屾櫘閫氬浣?
+    },
+    {
+      "id": "wall-exist",
+      "rule": "鍖呭惈 EXIST / 鍘熸湁 / 淇濈暀 / 鍘熷",
+      "keywords": ["EXIST", "鍘熸湁", "淇濈暀", "鍘熷", "鍘?],
+      "targetLayer": "01-AR-鍘熸湁澧欎綋",
+      "note": "鍘熸湁/淇濈暀澧欎綋"
+    },
+    {
+      "id": "finish-wall",
+      "rule": "鍖呭惈 澧欎綋瀹屾垚闈?/ 澧欓潰瀹屾垚闈?/ 瀹屾垚闈?/ FINISH",
+      "keywords": ["澧欎綋瀹屾垚闈?, "澧欓潰瀹屾垚闈?, "瀹屾垚闈?, "FINISH", "澧欓潰"],
+      "targetLayer": "02-IN-瀹屾垚闈?,
+      "note": "瀹屾垚闈紭鍏堜簬娉涘浣撹鍒?
+    },
+    {
+      "id": "plumbing-drain",
+      "rule": "鍖呭惈 涓嬫按 / 鎺掓按 / DRAIN / EM-04",
+      "keywords": ["涓嬫按", "鎺掓按", "DRAIN", "EM-04"],
+      "targetLayer": "12-PL-鎺掓按",
+      "note": "鎺掓按绫讳紭鍏堜簬娉涜澶囪鍒?
+    },
+    {
+      "id": "plumbing-supply",
+      "rule": "鍖呭惈 涓婃按 / 缁欐按 / WATER / EM-03",
+      "keywords": ["涓婃按", "缁欐按", "WATER", "EM-03"],
+      "targetLayer": "12-PL-缁欐按",
+      "note": "缁欐按绫讳紭鍏堜簬娉涜澶囪鍒?
+    },
+    {
+      "id": "air-vent",
+      "rule": "鍖呭惈 鍚婇《椋庡彛 / 椋庡彛 / VENT",
+      "keywords": ["鍚婇《椋庡彛", "椋庡彛", "VENT", "CL-04"],
+      "targetLayer": "10-EQ-椋庡彛",
+      "note": "椋庡彛姣旀硾璁惧瑙勫垯鏇村叿浣?
+    },
+    {
+      "id": "fire-protection",
+      "rule": "鍖呭惈 娑堥槻璁惧鐐逛綅 / 娑堥槻 / FIRE / 鍠锋穻 / 鐑熸劅 / BS-07",
+      "keywords": ["娑堥槻璁惧鐐逛綅", "娑堥槻", "FIRE", "鍠锋穻", "鐑熸劅", "BS-07"],
+      "targetLayer": "11-FI-鍠锋穻",
+      "note": "娑堥槻绫讳紭鍏堟硾璁惧瑙勫垯"
+    },
+    {
+      "id": "equipment-concealed",
+      "rule": "鍖呭惈 鏆楄棌璁惧 / 闅愯棌璁惧 / CL-03",
+      "keywords": ["鏆楄棌璁惧", "闅愯棌璁惧", "CL-03"],
+      "targetLayer": "10-EQ-閫氱敤璁惧",
+      "note": "鏆楄棌璁惧鏄壒瀹氳澶囩被鍨?
+    },
+    {
+      "id": "equipment-fixed",
+      "rule": "鍖呭惈 鍥哄畾璁惧鐐逛綅 / BS-05",
+      "keywords": ["鍥哄畾璁惧鐐逛綅", "BS-05"],
+      "targetLayer": "10-EQ-閫氱敤璁惧",
+      "note": "鍥哄畾璁惧鐐逛綅"
+    },
+    {
+      "id": "equipment-variable",
+      "rule": "鍖呭惈 鍙彉璁惧鐐逛綅 / 鍙彉璁惧 / BS-06",
+      "keywords": ["鍙彉璁惧鐐逛綅", "鍙彉璁惧", "BS-06"],
+      "targetLayer": "10-EQ-閫氱敤璁惧",
+      "note": "鍙彉璁惧鐐逛綅"
+    },
+    {
+      "id": "equipment-floor",
+      "rule": "鍖呭惈 鍦伴潰璁惧 / FL-02",
+      "keywords": ["鍦伴潰璁惧", "FL-02"],
+      "targetLayer": "10-EQ-閫氱敤璁惧",
+      "note": "鍦伴潰璁惧鏄澶囧瓙绫?
+    },
+    {
+      "id": "structure-lintel",
+      "rule": "鍖呭惈 寤虹瓚杩囨 / 杩囨 / BS-03-寤虹瓚杩囨",
+      "keywords": ["寤虹瓚杩囨", "杩囨"],
+      "targetLayer": "01-AR-娲炲彛",
+      "note": "杩囨褰掓礊鍙ｅ眰"
+    },
+    {
+      "id": "structure-stair",
+      "rule": "鍖呭惈 寤虹瓚妤兼 / 妤兼 / STAIR / BS-08",
+      "keywords": ["寤虹瓚妤兼", "妤兼", "STAIR", "BS-08"],
+      "targetLayer": "01-AR-澧欎綋",
+      "note": "妤兼绗竴鐗堟殏褰掑浣撳眰"
+    },
+    {
+      "id": "structure-slab-new",
+      "rule": "鍖呭惈 鏂板缓妤兼 / 鏂板缓妤兼澘 / BS-03-鏂板缓妤兼",
+      "keywords": ["鏂板缓妤兼", "鏂板缓妤兼澘", "BS-03"],
+      "targetLayer": "01-AR-鏂板缓澧欎綋",
+      "note": "鏂板缓妤兼澘/妤兼褰掓柊寤哄浣?
+    },
+    {
+      "id": "structure-slab",
+      "rule": "鍖呭惈 寤虹瓚妤兼澘 / 妤兼澘 / BS-09",
+      "keywords": ["寤虹瓚妤兼澘", "妤兼澘", "BS-09"],
+      "targetLayer": "01-AR-澧欎綋",
+      "note": "妤兼澘绗竴鐗堟殏褰掑浣撳眰"
+    },
+    {
+      "id": "door-building",
+      "rule": "鍖呭惈 寤虹瓚闂ㄧ獥 / 瀹ゅ唴闂ㄧ獥 / 瀹ゅ唴闂?/ BS-04 / FF-04 / FF-瀹ゅ唴闂?,
+      "keywords": ["寤虹瓚闂ㄧ獥", "瀹ゅ唴闂ㄧ獥", "瀹ゅ唴闂?, "BS-04", "FF-04"],
+      "targetLayer": "01-AR-闂?,
+      "note": "闂ㄧ獥娣峰悎鍥惧眰鍏堝綊鍒伴棬鍥惧眰锛屽悗缁汉宸ョ粏鍒?
+    },
+    {
+      "id": "floor-paving",
+      "rule": "鍖呭惈 鍦伴潰閾鸿 / 鍦伴潰閾鸿 / 閾鸿 / 閾鸿 / FL-01",
+      "keywords": ["鍦伴潰閾鸿", "鍦伴潰閾鸿", "閾鸿", "閾鸿", "FL-01"],
+      "targetLayer": "03-FL-鍦伴潰",
+      "note": "鍦伴潰閾鸿浼樺厛浜庢硾 FL 鍜屽湴闈㈣鍒?
+    },
+    {
+      "id": "cabinet",
+      "rule": "鍖呭惈 瀹氬埗鏌滀綋 / 鏌滀綋 / CABINET / FF-02",
+      "keywords": ["瀹氬埗鏌滀綋", "鏌滀綋", "CABINET", "FF-02"],
+      "targetLayer": "05-FU-鏌滀綋",
+      "note": "鏌滀綋浼樺厛娉涘鍏疯鍒?
+    },
+    {
+      "id": "lighting-soft",
+      "rule": "鍖呭惈 杞鐏叿 / FF-03",
+      "keywords": ["杞鐏叿", "FF-03"],
+      "targetLayer": "07-LI-灏勭伅",
+      "note": "杞鐏叿浼樺厛娉涚伅鍏疯鍒?
+    },
+    {
+      "id": "hatch-fill",
+      "rule": "鍖呭惈 濉厖鍥惧眰 / 濉厖 / HATCH / BS-10",
+      "keywords": ["濉厖鍥惧眰", "濉厖", "HATCH", "BS-10"],
+      "targetLayer": "17-AN-杈呭姪濉厖",
+      "note": "鏃犳硶缁嗗垎濉厖绫诲瀷鏃跺綊杈呭姪濉厖"
+    },
+    {
+      "id": "dim-index",
+      "rule": "鍖呭惈 鏍囨敞绱㈠紩 / 绱㈠紩 / IDEN",
+      "keywords": ["鏍囨敞绱㈠紩", "绱㈠紩", "IDEN"],
+      "targetLayer": "14-DM-绗﹀彿",
+      "note": "绱㈠紩绗﹀彿褰掓爣娉ㄧ鍙峰眰锛屼紭鍏堜簬娉涙爣娉ㄨ鍒?
+    },
+    {
+      "id": "text-note",
+      "rule": "鍖呭惈 鏂囧瓧璇存槑 / 淇敼璇存槑 / 璇存槑鏂囧瓧 / 鏂藉伐璇存槑",
+      "keywords": ["鏂囧瓧璇存槑", "淇敼璇存槑", "璇存槑鏂囧瓧", "鏂藉伐璇存槑"],
+      "targetLayer": "13-TX-璇存槑鏂囧瓧",
+      "note": "璇存槑鏂囧瓧浼樺厛浜庢硾鏂囧瓧瑙勫垯"
+    },
+    {
+      "id": "viewport",
+      "rule": "鍖呭惈 瑙嗗彛 / VIEWPORT / LA-03",
+      "keywords": ["瑙嗗彛", "VIEWPORT", "LA-03"],
+      "targetLayer": "15-FR-瑙嗗彛",
+      "note": "瑙嗗彛灞?
+    },
+    {
+      "id": "ceiling-shape",
+      "rule": "鍖呭惈 鍚婇《閫犲瀷 / 閫犲瀷 / CL-閫犲瀷",
+      "keywords": ["鍚婇《閫犲瀷", "閫犲瀷", "CL-閫犲瀷"],
+      "targetLayer": "04-CE-鍚婇《",
+      "note": "鍚婇《閫犲瀷"
+    },
+    {
+      "id": "ceiling",
+      "rule": "鍖呭惈 澶╄姳 / CEIL / 鍚婇《 / CL-04 / CL-03",
+      "keywords": ["澶╄姳", "CEIL", "鍚婇《", "CL-04", "CL-03"],
+      "targetLayer": "04-CE-鍚婇《",
+      "note": "澶╄姳/鍚婇《娉涜鍒?
+    },
+    {
+      "id": "temp-plot",
+      "rule": "鍖呭惈 Temp_PlotLayer / 涓嶆墦鍗?/ 涓存椂鎵撳嵃 / PLOT",
+      "keywords": ["Temp_PlotLayer", "涓嶆墦鍗?, "涓存椂鎵撳嵃", "PLOT"],
+      "targetLayer": "17-AN-涓嶆墦鍗扮嚎",
+      "note": "涓存椂鎵撳嵃灞傚綊涓嶆墦鍗扮嚎灞?
+    },
+    {
+      "id": "glass",
+      "rule": "鍖呭惈 鐜荤拑 / GLASS",
+      "keywords": ["鐜荤拑", "GLASS"],
+      "targetLayer": "02-IN-鐜荤拑"
+    },
+    {
+      "id": "door-generic",
+      "rule": "鍖呭惈 DOOR / 闂?/ 闂ㄧ獥",
+      "keywords": ["DOOR", "闂?, "闂ㄧ獥"],
+      "targetLayer": "01-AR-闂?
+    },
+    {
+      "id": "window",
+      "rule": "鍖呭惈 WINDOW / WIN / 绐?,
+      "keywords": ["WINDOW", "WIN", "绐?],
+      "targetLayer": "01-AR-绐?
+    },
+    {
+      "id": "floor-generic",
+      "rule": "鍖呭惈 鍦伴潰 / FLOOR / FL-",
+      "keywords": ["FLOOR", "鍦伴潰", "FL-"],
+      "targetLayer": "03-FL-鍦伴潰",
+      "note": "娉ㄦ剰 FL- 鍖呭惈杩炲瓧绗︿互閬垮厤璇尮閰?FL 寮€澶寸殑璁惧灞?
+    },
+    {
+      "id": "lighting-generic",
+      "rule": "鍖呭惈 LIGHT / 鐏叿 / 鐓ф槑 / LAMP",
+      "keywords": ["LIGHT", "鐓ф槑", "LAMP", "鐏叿"],
+      "targetLayer": "07-LI-灏勭伅"
+    },
+    {
+      "id": "electrical",
+      "rule": "鍖呭惈 ELEC / 鎻掑骇 / 寮€鍏?/ 寮虹數 / POWER",
+      "keywords": ["ELEC", "鎻掑骇", "寮€鍏?, "寮虹數", "POWER", "鐢?],
+      "targetLayer": "08-EL-寮虹數绾胯矾"
+    },
+    {
+      "id": "low-current",
+      "rule": "鍖呭惈 寮辩數 / 缃戠粶 / WK / 鐩戞帶 / CCTV",
+      "keywords": ["寮辩數", "缃戠粶", "WK", "鐩戞帶", "CCTV"],
+      "targetLayer": "09-WK-寮辩數绾胯矾"
+    },
+    {
+      "id": "plumbing-generic",
+      "rule": "鍖呭惈 缁欐帓姘?/ PL / 姘寸",
+      "keywords": ["缁欐帓姘?, "PL", "姘寸", "姘?],
+      "targetLayer": "12-PL-缁欐按"
+    },
+    {
+      "id": "equipment-generic",
+      "rule": "鍖呭惈 璁惧 / EQ / 绌鸿皟 / EQUIP",
+      "keywords": ["璁惧", "EQ", "绌鸿皟", "EQUIP"],
+      "targetLayer": "10-EQ-閫氱敤璁惧"
+    },
+    {
+      "id": "dim-generic",
+      "rule": "鍖呭惈 DIM / 鏍囨敞 / 灏哄 / DIMENSION",
+      "keywords": ["DIM", "鏍囨敞", "灏哄", "DIMENSION"],
+      "targetLayer": "14-DM-灏哄鏍囨敞"
+    },
+    {
+      "id": "text-generic",
+      "rule": "鍖呭惈 TEXT / TXT / 鏂囧瓧 / NOTE / 娉ㄩ噴",
+      "keywords": ["TEXT", "TXT", "鏂囧瓧", "NOTE", "娉ㄩ噴"],
+      "targetLayer": "13-TX-鏅€氭枃瀛?
+    },
+    {
+      "id": "fire-generic",
+      "rule": "鍖呭惈 FIRE / FI / 鍠锋穻 / 鐑熸劅",
+      "keywords": ["FIRE", "FI", "鍠锋穻", "鐑熸劅"],
+      "targetLayer": "11-FI-鍠锋穻"
+    },
+    {
+      "id": "title-block",
+      "rule": "鍖呭惈 鍥炬 / FR / TITLE / 鏍囬鏍?/ 鍥剧",
+      "keywords": ["鍥炬", "FR", "TITLE", "鏍囬鏍?, "鍥剧"],
+      "targetLayer": "15-FR-鍥炬"
+    },
+    {
+      "id": "xref",
+      "rule": "鍖呭惈 XREF / 鍙傜収 / 搴曞浘 / 鍙傝€?/ REF-",
+      "keywords": ["XREF", "鍙傜収", "搴曞浘", "鍙傝€?, "REF-"],
+      "targetLayer": "16-RF-鍘熷搴曞浘"
+    },
+    {
+      "id": "auxiliary",
+      "rule": "鍖呭惈 杈呭姪 / 涓存椂 / AN- / 杈呭姪绾?,
+      "keywords": ["杈呭姪", "涓存椂", "AN-", "杈呭姪绾?],
+      "targetLayer": "17-AN-杈呭姪绾?
+    },
+    {
+      "id": "furniture",
+      "rule": "鍖呭惈 FURN / 瀹跺叿 / 妗屾 / FURNITURE",
+      "keywords": ["FURN", "瀹跺叿", "妗屾", "FURNITURE"],
+      "targetLayer": "05-FU-妗屾"
+    },
+    {
+      "id": "wall-generic",
+      "rule": "鍖呭惈 WALL / 澧?/ 澧欎綋 / 鎵块噸澧?/ 闈炴壙閲嶅 / 澶栧 / 鍐呭 / 寤虹瓚",
+      "keywords": ["WALL", "澧?, "澧欎綋", "鎵块噸澧?, "闈炴壙閲嶅", "澶栧", "鍐呭", "寤虹瓚"],
+      "targetLayer": "01-AR-澧欎綋",
+      "note": "娉涘瑙勫垯鏀惧湪鏈€鍚庯紝纭繚鍏蜂綋澧欑被鍨嬪厛琚墠闈㈣鍒欏尮閰?
+    }
+  ]
+}
+

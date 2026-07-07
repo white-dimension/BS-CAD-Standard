@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Core
+namespace BS_CAD_STANDARD_1_0_Plugin.Core
 {
     public class DimStyleStandardConfig
     {

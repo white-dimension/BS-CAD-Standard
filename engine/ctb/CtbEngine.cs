@@ -6,10 +6,10 @@ using System.Text;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Ctb
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Ctb
 {
     /// <summary>
     /// CTB 引擎 — CTB 校验和导出逻辑的唯一来源。

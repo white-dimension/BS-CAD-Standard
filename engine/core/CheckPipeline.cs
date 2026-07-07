@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Core
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Core
 {
     /// <summary>
     /// 检查管道 — BS_CHECK 逻辑的唯一来源。
@@ -93,7 +93,10 @@ namespace BS_CAD_STANDARD_V10_Plugin.Engine.Core
             double currentLineweight = AcadUtils.LineWeightToMm(layerRecord.LineWeight);
             if (Math.Abs(currentLineweight - config.Lineweight) > 0.001)
             {
-                result.PropertyDeviations.Add($"{layerRecord.Name}: lineweight expected {config.Lineweight}mm, actual {(currentLineweight < 0 ? "default" : currentLineweight + "mm")}");
+                AddLayerDeviation(
+                    result.LineweightDeviations,
+                    result,
+                    $"{layerRecord.Name}: lineweight expected {config.Lineweight}mm, actual {(currentLineweight < 0 ? "default" : currentLineweight + "mm")}");
             }
 
             int currentTransparency = GetTransparencyPercent(layerRecord);

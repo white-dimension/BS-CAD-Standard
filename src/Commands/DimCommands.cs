@@ -3,13 +3,13 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Commands
+namespace BS_CAD_STANDARD_1_0_Plugin.Commands
 {
     public class DimCommands
     {
@@ -51,7 +51,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 }
                 else
                 {
-                    PromptResultType updateRes = PromptUtils.ConfirmAction($"标注样式 {selectedName} 已存在，是否按 V10 标准更新参数？", "Y");
+                    PromptResultType updateRes = PromptUtils.ConfirmAction($"标注样式 {selectedName} 已存在，是否按 1.0 标准更新参数？", "Y");
                     if (updateRes == PromptResultType.Yes)
                     {
                         styleId = DimStyleService.CreateOrUpdateStandardDimStyle(selectedCfg);

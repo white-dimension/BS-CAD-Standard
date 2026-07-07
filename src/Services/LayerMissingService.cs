@@ -5,10 +5,10 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Services
 {
     public class MissingReport
     {
@@ -37,6 +37,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
             HashSet<string> standardLayerNames = new(config.Layers.Select(l => l.Name), StringComparer.OrdinalIgnoreCase);
 
+            using (DocumentLock dl = doc.LockDocument())
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
                 try
@@ -97,7 +98,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                     Name = config.Name,
                     Color = Color.FromColorIndex(ColorMethod.ByAci, (short)config.Color),
                     LinetypeObjectId = linetypeId,
-                    LineWeight = LineWeight.ByLayer,
+                    LineWeight = AcadUtils.LineWeightFromMm(config.Lineweight),
                     IsPlottable = config.Plot
                 };
 

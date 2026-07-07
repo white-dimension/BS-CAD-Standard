@@ -1,9 +1,9 @@
 using Autodesk.AutoCAD.DatabaseServices;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Engine.Layer;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Engine.Layer;
 using System.Collections.Generic;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Cad.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Cad.Services
 {
     /// <summary>
     /// 图层桥接层 — cad → engine 的唯一切入点。

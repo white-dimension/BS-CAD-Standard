@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Core
+namespace BS_CAD_STANDARD_1_0_Plugin.Core
 {
     public static class StandardPaths
     {
@@ -27,18 +27,18 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         public static string PlotStylesDir => Path.Combine(ResolveRoot(), "plot_styles");
 
         // — JSON 配置路径 —
-        public static string MainConfigPath => Path.Combine(ConfigDir, "BS_CAD_Standard_V10.json");
-        public static string BackupConfigPath => Path.Combine(ConfigDir, "BS_CAD_Standard_V10.json");
+        public static string MainConfigPath => Path.Combine(ConfigDir, "BS_CAD_Standard_1.0.json");
+        public static string BackupConfigPath => Path.Combine(ConfigDir, "BS_CAD_Standard_1.0.json");
 
-        public static string DimConfigPath => Path.Combine(ConfigDir, "BS_DimStyle_Standard_V10.json");
-        public static string BackupDimConfigPath => Path.Combine(ConfigDir, "BS_DimStyle_Standard_V10.json");
+        public static string DimConfigPath => Path.Combine(ConfigDir, "BS_DimStyle_Standard_1.0.json");
+        public static string BackupDimConfigPath => Path.Combine(ConfigDir, "BS_DimStyle_Standard_1.0.json");
 
-        public static string MigrationRulesConfigPath => Path.Combine(ConfigDir, "BS_Layer_Migration_Rules_V10.json");
+        public static string MigrationRulesConfigPath => Path.Combine(ConfigDir, "BS_Layer_Migration_Rules_1.0.json");
 
         // — CTB —
-        public const string CtbFileName = "BS_CAD_STANDARD_V10.ctb";
+        public const string CtbFileName = "BS_CAD_STANDARD_1.0.ctb";
 
         // — DWT —
-        public static string DwtPath => Path.Combine(TemplatesDir, "BS_CAD_STANDARD_V10.dwt");
+        public static string DwtPath => Path.Combine(TemplatesDir, "BS_CAD_STANDARD_1.0.dwt");
     }
 }

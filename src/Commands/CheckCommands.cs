@@ -4,12 +4,12 @@ using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Cad.Services;
-using BS_CAD_STANDARD_V10_Plugin.Engine.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Cad.Services;
+using BS_CAD_STANDARD_1_0_Plugin.Engine.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Commands
+namespace BS_CAD_STANDARD_1_0_Plugin.Commands
 {
     public class CheckCommands
     {
@@ -50,6 +50,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
             PrintList(ed, "Missing standard layers", result.MissingCoreLayers);
             PrintList(ed, "Color mismatches", result.ColorDeviations);
             PrintList(ed, "Linetype mismatches", result.LinetypeDeviations);
+            PrintList(ed, "Lineweight mismatches", result.LineweightDeviations);
             PrintList(ed, "Transparency mismatches", result.TransparencyDeviations);
             PrintList(ed, "Plot mismatches", result.PlotDeviations);
 
@@ -58,6 +59,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 result.MissingCoreLayers.Count +
                 result.ColorDeviations.Count +
                 result.LinetypeDeviations.Count +
+                result.LineweightDeviations.Count +
                 result.TransparencyDeviations.Count +
                 result.PlotDeviations.Count;
             ed.WriteMessage($"\n\nLayer issue total: {layerIssueCount}");

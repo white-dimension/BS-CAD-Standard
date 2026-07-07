@@ -1,11 +1,11 @@
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Commands
+namespace BS_CAD_STANDARD_1_0_Plugin.Commands
 {
     public class LayerAuditCommands
     {
@@ -54,7 +54,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
 
             if (result.NonStandardLayers.Count == 0)
             {
-                ed.WriteMessage("\n\n未发现非标准图层，当前图纸图层符合 BS CAD Standard V10 标准。");
+                ed.WriteMessage("\n\n未发现非标准图层，当前图纸图层符合 BS CAD Standard 1.0 标准。");
                 ed.WriteMessage("\n\n====================================");
                 return;
             }

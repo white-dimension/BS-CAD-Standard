@@ -1,5 +1,5 @@
-﻿; BS CAD Standard V10 - Core layer creation script
-; Command: BS_CREATE_LAYERS_V10
+﻿; BS CAD Standard 1.0 - Core layer creation script
+; Command: BS_CREATE_LAYERS_1_0
 ; Encoding: UTF-8 with BOM
 
 (vl-load-com)
@@ -37,7 +37,7 @@
   (if (> (strlen desc) 0) (vl-catch-all-apply 'vla-put-Description (list layer desc)))
 )
 
-(defun c:BS_CREATE_LAYERS_V10 (/ layer-data item)
+(defun c:BS_CREATE_LAYERS_1_0 (/ layer-data item)
   (foreach lt '("Continuous" "Hidden" "Dashed" "Center")
     (bs:load-linetype lt)
   )
@@ -134,9 +134,10 @@
     )
   )
   (foreach item layer-data (bs:ensure-layer item))
-  (princ (strcat "\nBS CAD Standard V10: created/updated " (itoa (length layer-data)) " core layers."))
+  (princ (strcat "\nBS CAD Standard 1.0: created/updated " (itoa (length layer-data)) " core layers."))
   (princ)
 )
 
-(princ "\nCommand loaded: BS_CREATE_LAYERS_V10")
+(princ "\nCommand loaded: BS_CREATE_LAYERS_1_0")
 (princ)
+

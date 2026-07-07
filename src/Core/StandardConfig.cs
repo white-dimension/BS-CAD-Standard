@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Core
+namespace BS_CAD_STANDARD_1_0_Plugin.Core
 {
     public class StandardConfig
     {
@@ -29,7 +29,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         [JsonPropertyName("loadModes")]
         public List<LoadModeConfig> LoadModes { get; set; } = new();
 
-        [JsonIgnore]
+        [JsonPropertyName("categories")]
         public List<StandardCategory> ConfigCategories { get; set; } = new();
     }
 
@@ -80,10 +80,10 @@ namespace BS_CAD_STANDARD_V10_Plugin.Core
         [JsonPropertyName("categoryName")]
         public string CategoryName { get; set; } = string.Empty;
 
-        [JsonIgnore]
+        [JsonPropertyName("locked")]
         public bool Locked { get; set; }
 
-        [JsonIgnore]
+        [JsonPropertyName("newViewportFreeze")]
         public string NewViewportFreezeRaw { get; set; } = string.Empty;
 
         [JsonIgnore]

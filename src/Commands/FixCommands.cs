@@ -1,11 +1,11 @@
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Commands
+namespace BS_CAD_STANDARD_1_0_Plugin.Commands
 {
     public class FixCommands
     {
@@ -37,6 +37,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                 ed.WriteMessage($"\n\n[Fixed]");
                 ed.WriteMessage($"\nFixed color count: {report.FixedColorCount}");
                 ed.WriteMessage($"\nFixed linetype count: {report.FixedLinetypeCount}");
+                ed.WriteMessage($"\nFixed lineweight count: {report.FixedLineweightCount}");
                 ed.WriteMessage($"\nFixed transparency count: {report.FixedTransparencyCount}");
                 ed.WriteMessage($"\nFixed plot count: {report.FixedPlotCount}");
                 ed.WriteMessage($"\nFixed locked count: {report.FixedLockedCount}");

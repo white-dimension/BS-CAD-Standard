@@ -1,12 +1,12 @@
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Services
 {
     public class InitService
     {

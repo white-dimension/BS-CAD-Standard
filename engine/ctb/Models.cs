@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Ctb
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Ctb
 {
     public class CtbCheckReport
     {

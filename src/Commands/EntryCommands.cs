@@ -2,7 +2,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Commands
+namespace BS_CAD_STANDARD_1_0_Plugin.Commands
 {
     public class EntryCommands
     {
@@ -11,7 +11,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
         {
             Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
 
-            ed.WriteMessage("\n===== BS CAD Standard V10 =====");
+            ed.WriteMessage("\n===== BS CAD Standard 1.0 =====");
             ed.WriteMessage("\n  BS_CHECK    检查当前图纸标准");
             ed.WriteMessage("\n  BS_INIT     初始化图纸标准环境");
             ed.WriteMessage("\n  BS_DRAW     绘图辅助入口（图层/文字/标注/引线）");

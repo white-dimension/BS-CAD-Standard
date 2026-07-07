@@ -1,6 +1,6 @@
 using Autodesk.AutoCAD.DatabaseServices;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Template
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Template
 {
     /// <summary>
     /// 布局检查器 — 检查布局数量和打印样式设置。

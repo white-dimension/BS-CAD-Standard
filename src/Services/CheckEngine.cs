@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Services
 {
     public class CheckResult
     {
@@ -15,6 +15,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
         public List<string> ExtraLayers { get; set; } = new();
         public List<string> ColorDeviations { get; set; } = new();
         public List<string> LinetypeDeviations { get; set; } = new();
+        public List<string> LineweightDeviations { get; set; } = new();
         public List<string> TransparencyDeviations { get; set; } = new();
         public List<string> PlotDeviations { get; set; } = new();
         public List<string> MissingTextStyles { get; set; } = new();
@@ -108,7 +109,10 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             double currentLineweight = AcadUtils.LineWeightToMm(layerRecord.LineWeight);
             if (Math.Abs(currentLineweight - config.Lineweight) > 0.001)
             {
-                result.PropertyDeviations.Add($"{layerRecord.Name}: lineweight expected {config.Lineweight}mm, actual {(currentLineweight < 0 ? "default" : currentLineweight + "mm")}");
+                AddLayerDeviation(
+                    result.LineweightDeviations,
+                    result,
+                    $"{layerRecord.Name}: lineweight expected {config.Lineweight}mm, actual {(currentLineweight < 0 ? "default" : currentLineweight + "mm")}");
             }
 
             int currentTransparency = GetTransparencyPercent(layerRecord);

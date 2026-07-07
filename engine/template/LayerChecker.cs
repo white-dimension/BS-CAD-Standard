@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Template
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Template
 {
     /// <summary>
     /// 图层检查器 — 检查标准图层完整性、图框/视口、默认图层、非标准图层。

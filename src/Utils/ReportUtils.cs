@@ -1,7 +1,7 @@
 using System;
 using Autodesk.AutoCAD.EditorInput;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Utils
+namespace BS_CAD_STANDARD_1_0_Plugin.Utils
 {
     public static class ReportUtils
     {

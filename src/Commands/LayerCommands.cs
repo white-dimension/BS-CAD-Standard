@@ -2,13 +2,13 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Cad.Services;
-using BS_CAD_STANDARD_V10_Plugin.Engine.Layer;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Cad.Services;
+using BS_CAD_STANDARD_1_0_Plugin.Engine.Layer;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 using System.Collections.Generic;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Commands
+namespace BS_CAD_STANDARD_1_0_Plugin.Commands
 {
     public class LayerCommands
     {

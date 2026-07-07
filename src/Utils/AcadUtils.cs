@@ -3,7 +3,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using System;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Utils
+namespace BS_CAD_STANDARD_1_0_Plugin.Utils
 {
     public static class AcadUtils
     {

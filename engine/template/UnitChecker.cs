@@ -1,6 +1,6 @@
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Template
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Template
 {
     /// <summary>
     /// 单位检查器 — 检查 INSUNITS / LUNITS / LUPREC / AUPREC。

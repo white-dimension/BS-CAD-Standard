@@ -2,12 +2,12 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.DatabaseServices;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Services; // DEPRECATED_CALL — migrate to engine when available
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 using System.Linq;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Commands
+namespace BS_CAD_STANDARD_1_0_Plugin.Commands
 {
     public class InitCommands
     {
@@ -31,7 +31,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Commands
                     ed.WriteMessage("\n[信息] 标注样式配置文件缺失，跳过标注样式初始化。");
                 }
 
-                ed.WriteMessage("\n--- BS CAD Standard V10 环境初始化 ---");
+                ed.WriteMessage("\n--- BS CAD Standard 1.0 环境初始化 ---");
 
                 bool createLayers = AskCreateLayers(ed, context.StandardConfig);
                 bool createText = AskCreateTextStyles(ed, context.StandardConfig);

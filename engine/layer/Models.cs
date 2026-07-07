@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Engine.Layer
+namespace BS_CAD_STANDARD_1_0_Plugin.Engine.Layer
 {
     public class CategoryInfo
     {

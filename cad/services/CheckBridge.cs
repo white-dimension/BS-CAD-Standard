@@ -1,7 +1,7 @@
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Engine.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Engine.Core;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Cad.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Cad.Services
 {
     /// <summary>
     /// 检查桥接层 — cad → engine 的唯一切入点。

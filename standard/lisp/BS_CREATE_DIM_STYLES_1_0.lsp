@@ -1,5 +1,5 @@
-﻿; BS CAD Standard V10 - Dimension style creation script
-; Command: BS_CREATE_DIM_STYLES_V10
+﻿; BS CAD Standard 1.0 - Dimension style creation script
+; Command: BS_CREATE_DIM_STYLES_1_0
 ; Encoding: UTF-8 with BOM
 
 (vl-load-com)
@@ -84,10 +84,10 @@
   (princ (strcat "\n  OK: " style-name))
 )
 
-(defun c:BS_CREATE_DIM_STYLES_V10 (/)
-  (princ "\nBS CAD Standard V10: creating/updating dimension styles...")
+(defun c:BS_CREATE_DIM_STYLES_1_0 (/)
+  (princ "\nBS CAD Standard 1.0: creating/updating dimension styles...")
   (if (not (tblsearch "STYLE" "BS_TEXT_CN"))
-    (princ "\nWarning: text style BS_TEXT_CN does not exist. Run BS_CREATE_TEXT_STYLES_V10 first.")
+    (princ "\nWarning: text style BS_TEXT_CN does not exist. Run BS_CREATE_TEXT_STYLES_1_0 first.")
   )
 
   ; BS_DIM_100 follows the screenshot settings.
@@ -97,9 +97,10 @@
   (bs:save-dim-style "BS_DIM_DETAIL" 20.0 2.5 2.0 12.0 1.5 2.0 5.0 1.0)
 
   (vl-cmdf "_.-DIMSTYLE" "_Restore" "BS_DIM_100")
-  (princ "\nBS CAD Standard V10: dimension styles created/updated successfully.")
+  (princ "\nBS CAD Standard 1.0: dimension styles created/updated successfully.")
   (princ)
 )
 
-(princ "\nCommand loaded: BS_CREATE_DIM_STYLES_V10")
+(princ "\nCommand loaded: BS_CREATE_DIM_STYLES_1_0")
 (princ)
+

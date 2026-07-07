@@ -5,10 +5,10 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.EditorInput;
-using BS_CAD_STANDARD_V10_Plugin.Core;
-using BS_CAD_STANDARD_V10_Plugin.Utils;
+using BS_CAD_STANDARD_1_0_Plugin.Core;
+using BS_CAD_STANDARD_1_0_Plugin.Utils;
 
-namespace BS_CAD_STANDARD_V10_Plugin.Services
+namespace BS_CAD_STANDARD_1_0_Plugin.Services
 {
     public class FixReport
     {
@@ -17,10 +17,11 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
         public int FixedColorCount { get; set; }
         public int FixedLinetypeCount { get; set; }
+        public int FixedLineweightCount { get; set; }
         public int FixedTransparencyCount { get; set; }
         public int FixedPlotCount { get; set; }
         public int FixedLockedCount { get; set; }
-        public int TotalFixed => FixedColorCount + FixedLinetypeCount + FixedTransparencyCount + FixedPlotCount + FixedLockedCount;
+        public int TotalFixed => FixedColorCount + FixedLinetypeCount + FixedLineweightCount + FixedTransparencyCount + FixedPlotCount + FixedLockedCount;
 
         public List<string> MissingStandardLayers { get; set; } = new();
         public List<string> NonStandardLayers { get; set; } = new();
@@ -38,6 +39,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
 
             HashSet<string> standardLayerNames = new(config.Layers.Select(l => l.Name), StringComparer.OrdinalIgnoreCase);
 
+            using (DocumentLock dl = doc.LockDocument())
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
                 try
@@ -92,6 +94,10 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             string currentLinetype = LayerPropertyUtils.GetLinetypeName(tr, layerRecord);
             bool linetypeMismatch = !string.Equals(currentLinetype, config.Linetype, StringComparison.OrdinalIgnoreCase);
 
+            // Lineweight
+            double currentLineweight = AcadUtils.LineWeightToMm(layerRecord.LineWeight);
+            bool lineweightMismatch = Math.Abs(currentLineweight - config.Lineweight) > 0.001;
+
             // Transparency
             int currentTransparency = LayerPropertyUtils.GetTransparencyPercent(layerRecord);
             bool transparencyMismatch = currentTransparency != config.Transparency;
@@ -102,7 +108,7 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
             // Locked
             bool lockedMismatch = layerRecord.IsLocked != config.Locked;
 
-            bool hasFix = (linetypeMismatch || transparencyMismatch || plotMismatch || lockedMismatch ||
+            bool hasFix = (linetypeMismatch || lineweightMismatch || transparencyMismatch || plotMismatch || lockedMismatch ||
                            layerRecord.Color.ColorIndex != config.Color);
 
             if (!hasFix) return;
@@ -136,6 +142,13 @@ namespace BS_CAD_STANDARD_V10_Plugin.Services
                         layerRecord.LinetypeObjectId = linetypeId;
                         report.FixedLinetypeCount++;
                     }
+                }
+
+                // Fix lineweight
+                if (lineweightMismatch)
+                {
+                    layerRecord.LineWeight = AcadUtils.LineWeightFromMm(config.Lineweight);
+                    report.FixedLineweightCount++;
                 }
 
                 // Fix transparency
