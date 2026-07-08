@@ -4,7 +4,25 @@
 
 (vl-load-com)
 
-(setq *bs-v1_0-lisp-dir* "D:\\01_DesignProjects\\BS_CAD_STANDARD_1.0_Package\\lisp")
+(defun bs:v1_0-get-lisp-dir (/ init-path)
+  (setq init-path (findfile "BS_INIT_STANDARD_1_0.lsp"))
+  (if init-path
+    (vl-filename-directory init-path)
+    "."
+  )
+)
+
+(setq *bs-v1_0-lisp-dir* (bs:v1_0-get-lisp-dir))
+
+(defun bs:v1_0-template-path (/ standard-dir)
+  (if (= *bs-v1_0-lisp-dir* ".")
+    "..\\templates\\BS_CAD_STANDARD_1.0.dwt"
+    (progn
+      (setq standard-dir (vl-filename-directory *bs-v1_0-lisp-dir*))
+      (strcat standard-dir "\\templates\\BS_CAD_STANDARD_1.0.dwt")
+    )
+  )
+)
 
 (defun bs:v1_0-load-file (file-name / full-path result)
   (setq full-path (strcat *bs-v1_0-lisp-dir* "\\" file-name))
@@ -146,7 +164,7 @@
 
   (princ "\nBS CAD Standard 1.0 initialization complete.")
   (princ "\nNext: set page setup to BS_CAD_STANDARD_1.0.ctb, then SAVEAS DWT:")
-  (princ "\nD:\\01_DesignProjects\\BS_CAD_STANDARD_1.0_Package\\templates\\BS_CAD_STANDARD_1.0.dwt")
+  (princ (strcat "\n" (bs:v1_0-template-path)))
   (princ)
 )
 

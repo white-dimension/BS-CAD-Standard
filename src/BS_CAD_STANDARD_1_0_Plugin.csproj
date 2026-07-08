@@ -5,19 +5,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AutoCADReferenceDir Condition="'$(AutoCADReferenceDir)' == ''">$(ProgramW6432)\Autodesk\AutoCAD 2027</AutoCADReferenceDir>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="AcMgd">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2027\AcMgd.dll</HintPath>
+      <HintPath>$(AutoCADReferenceDir)\AcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2027\AcDbMgd.dll</HintPath>
+      <HintPath>$(AutoCADReferenceDir)\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcCoreMgd">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2027\AcCoreMgd.dll</HintPath>
+      <HintPath>$(AutoCADReferenceDir)\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
